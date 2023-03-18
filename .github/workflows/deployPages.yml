@@ -16,7 +16,7 @@ jobs:
     - name: Use Node.js latest cached
       uses: actions/setup-node@v3
       with:
-        node-version: *
+        node-version: "*"
         cache: 'npm'
         cache-dependency-path: ./package-lock.json
     - run: ls
