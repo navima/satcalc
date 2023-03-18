@@ -1,0 +1,55 @@
+Items
+    Base unit = 1/minute
+Machines
+    Converts list of items to list of items
+    List
+    Required materials
+    Power draw
+Recipes
+    Converts list of items to list of items
+    List
+    Toggleable
+Alternate recipes
+    List
+    Toggleable
+    Custom recipes
+Calculation
+    Input list
+    Output list
+    The generated dependency graph
+Upload, Parse Savefile
+    Alt. recipes
+    Available transporters
+Multiple tabs that hold different calculations
+Generate graph that resolves processing stack between input and output
+    Output
+        User input
+        List of items
+    Input
+        Generated
+        User modifiable (Only add)
+        List of basic items
+    Panning
+    Zooming
+    Multiple type of graphs
+        Logical graph (like Daniel2013's calculator)
+            Node -> Machine Stack (X times Y machine)
+            Edge -> Connection (X amount of parts/m)
+                Type (Pipeline, Conveyor)
+                Color -> same type of items are same color
+        Physical graph
+            Node -> Machine
+            Edge -> Transporter
+                Type (Pipeline, Conveyor)
+                Tier
+                Modify Material usage bcs. number of 
+    Info
+        Power usage
+        Material usage
+        List of machines
+Persistence (store in cookies)
+    Custom recipes
+    Calculations
+    Selected Alt. recipes
+    Selected recipes
+    Whole save file
