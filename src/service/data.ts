@@ -7,7 +7,8 @@ export const items: Map<string, Item> = new Map<string, Item>([
 	['ironPlate', new Item('Iron plate')],
 	['reinforcedIronPlate', new Item('Reinforced iron plate')],
 	['screw', new Item('Screw')],
-	['ironRod', new Item('Iron rod')]
+	['ironRod', new Item('Iron rod')],
+	['water', new Item('Water')]
 ]);
 export const recipes: Recipe[] = [
 	new Recipe(
