@@ -28,12 +28,16 @@ export class ItemRate {
 
 export class Recipe {
 	public name: string;
+	public alt = false;
+	public machine: string;
 	public inputs: ItemRate[];
 	public outputs: ItemRate[];
-	public constructor(name: string, inputs: ItemRate[], outputs: ItemRate[]) {
+	public constructor(name: string, machine: string, inputs: ItemRate[], outputs: ItemRate[], alt = false) {
 		this.name = name;
+		this.machine = machine;
 		this.inputs = inputs;
 		this.outputs = outputs;
+		this.alt = alt;
 	}
 }
 
@@ -42,11 +46,24 @@ export class Graph {
 	public constructor(nodes: Node[]) {
 		this.nodes = nodes;
 	}
+	public getRoots(): Node[] {
+		return this.nodes.filter(node => node.isRoot());
+	}
+	public getLeaves(): Node[] {
+		return this.nodes.filter(node => node.isLeaf());
+	}
 }
 
-export class Node {
+export abstract class Node {
 	public incomingEdges: Edge[] = [];
 	public outgoingEdges: Edge[] = [];
+	public isRoot(): boolean {
+		return this.incomingEdges.length === 0;
+	}
+	public isLeaf(): boolean {
+		return this.outgoingEdges.length === 0;
+	}
+	public abstract getFriendlyName(): string;
 }
 
 export class Edge {
@@ -74,6 +91,9 @@ export class RecipeNode extends Node {
 	public getScaledOutputs(): ItemRate[] {
 		return this.recipe.outputs.map(output => new ItemRate(output.item, output.rate * this.multiplier));
 	}
+	public getFriendlyName(): string {
+		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier;
+	}
 }
 
 export class OutputNode extends Node {
@@ -82,6 +102,9 @@ export class OutputNode extends Node {
 		super();
 		this.item = item;
 	}
+	public getFriendlyName(): string {
+		return 'Output: ' + this.item.item.name + ' x' + this.item.rate;
+	}
 }
 
 export class InputNode extends Node {
@@ -89,6 +112,9 @@ export class InputNode extends Node {
 	public constructor(item: ItemRate) {
 		super();
 		this.item = item;
+	}
+	public getFriendlyName(): string {
+		return 'Input: ' + this.item.item.name + ' x' + this.item.rate;
 	}
 }
 
