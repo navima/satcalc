@@ -16,13 +16,13 @@ export default class CalculatorService {
 		this.simplify(graph);
 		console.log(`Created graph with ${graph.nodes.length} nodes, 
 roots=[
-	${graph.getRoots().map(n => n.getFriendlyName()).join('\n    ')}
+	${graph.getRoots().map(n => n.friendlyName).join('\n    ')}
 ], 
 leaves=[
-	${graph.getLeaves().map(n => n.getFriendlyName()).join('\n    ')}
+	${graph.getLeaves().map(n => n.friendlyName).join('\n    ')}
 ]
 intermediate=[
-	${graph.nodes.filter(n => !n.isRoot() && !n.isLeaf()).map(n => n.getFriendlyName()).join('\n    ')}
+	${graph.nodes.filter(n => !n.isRoot && !n.isLeaf).map(n => n.friendlyName).join('\n    ')}
 ]`);
 		return graph;
 	}
@@ -36,7 +36,7 @@ intermediate=[
 			graph.nodes.push(opNode);
 		}
 		while (perimeter.length > 0 && iterations++ < 100) {
-			console.log(perimeter.map(n => n.getFriendlyName()));
+			console.log(perimeter.map(n => n.friendlyName));
 			const node = perimeter.pop()!;
 			if (node instanceof OutputNode) {
 				const opNode = node as OutputNode;

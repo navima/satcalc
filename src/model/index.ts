@@ -47,23 +47,23 @@ export class Graph {
 		this.nodes = nodes;
 	}
 	public getRoots(): Node[] {
-		return this.nodes.filter(node => node.isRoot());
+		return this.nodes.filter(node => node.isRoot);
 	}
 	public getLeaves(): Node[] {
-		return this.nodes.filter(node => node.isLeaf());
+		return this.nodes.filter(node => node.isLeaf);
 	}
 }
 
 export abstract class Node {
 	public incomingEdges: Edge[] = [];
 	public outgoingEdges: Edge[] = [];
-	public isRoot(): boolean {
+	public get isRoot(): boolean {
 		return this.incomingEdges.length === 0;
 	}
-	public isLeaf(): boolean {
+	public get isLeaf(): boolean {
 		return this.outgoingEdges.length === 0;
 	}
-	public abstract getFriendlyName(): string;
+	public abstract get friendlyName(): string;
 }
 
 export class Edge {
@@ -91,7 +91,7 @@ export class RecipeNode extends Node {
 	public getScaledOutputs(): ItemRate[] {
 		return this.recipe.outputs.map(output => new ItemRate(output.item, output.rate * this.multiplier));
 	}
-	public getFriendlyName(): string {
+	public get friendlyName(): string {
 		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + '\t' + this.recipe.machine;
 	}
 }
@@ -102,7 +102,7 @@ export class OutputNode extends Node {
 		super();
 		this.item = item;
 	}
-	public getFriendlyName(): string {
+	public get friendlyName(): string {
 		return 'Output: ' + this.item.item.name + ' x' + this.item.rate;
 	}
 }
@@ -113,7 +113,7 @@ export class InputNode extends Node {
 		super();
 		this.item = item;
 	}
-	public getFriendlyName(): string {
+	public get friendlyName(): string {
 		return 'Input: ' + this.item.item.name + ' x' + this.item.rate;
 	}
 }
