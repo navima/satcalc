@@ -13,6 +13,8 @@ export default class CalculatorService {
 	recipes: Recipe[] = [
 		{
 			name: 'Reinforced Iron Plate',
+			machine: 'assembler',
+			alt: false,
 			inputs: [
 				{ item: this.items.get('ironPlate')!, rate: 30 },
 				{ item: this.items.get('screw')!, rate: 60 }
@@ -23,6 +25,8 @@ export default class CalculatorService {
 		},
 		{
 			name: 'Iron Plate',
+			machine: 'constructor',
+			alt: false,
 			inputs: [
 				{ item: this.items.get('ironIngot')!, rate: 30 }
 			],
@@ -32,6 +36,8 @@ export default class CalculatorService {
 		},
 		{
 			name: 'Screw',
+			machine: 'constructor',
+			alt: false,
 			inputs: [
 				{ item: this.items.get('ironRod')!, rate: 10 }
 			],
@@ -41,6 +47,8 @@ export default class CalculatorService {
 		},
 		{
 			name: 'Iron Rod',
+			machine: 'constructor',
+			alt: false,
 			inputs: [
 				{ item: this.items.get('ironIngot')!, rate: 15 }
 			],
@@ -50,24 +58,35 @@ export default class CalculatorService {
 		}
 	];
 
-	calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
+	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
 		const graph = new Graph([]);
 		this.expand(graph, inputs, outputs);
 		this.prune(graph);
 		this.simplify(graph);
+		console.log(`Created graph with ${graph.nodes.length} nodes, 
+roots=[
+	${graph.getRoots().map(n => n.getFriendlyName()).join('\n    ')}
+], 
+leaves=[
+	${graph.getLeaves().map(n => n.getFriendlyName()).join('\n    ')}
+]
+intermediate=[
+	${graph.nodes.filter(n => !n.isRoot() && !n.isLeaf()).map(n => n.getFriendlyName()).join('\n    ')}
+]`);
 		return graph;
 	}
 
-	expand(graph: Graph, inputs: ItemRate[], outputs: ItemRate[]): void {
+	private expand(graph: Graph, inputs: ItemRate[], outputs: ItemRate[]): void {
 		let iterations = 0;
 		const perimeter: Node[] = [];
 		for (const output of outputs) {
-			perimeter.push(new OutputNode(output));
+			const opNode = new OutputNode(output);
+			perimeter.push(opNode);
+			graph.nodes.push(opNode);
 		}
 		while (perimeter.length > 0 && iterations++ < 100) {
-			console.log(perimeter);
+			console.log(perimeter.map(n => n.getFriendlyName()));
 			const node = perimeter.pop();
-			console.log('Current node: ', node);
 			if (node instanceof OutputNode) {
 				const opNode = node as OutputNode;
 				const recipesProducing = this.findRecipesProducing(opNode.item);
@@ -93,7 +112,7 @@ export default class CalculatorService {
 		}
 	}
 
-	findRecipesProducing(item: ItemRate): RecipeNode[] {
+	private findRecipesProducing(item: ItemRate): RecipeNode[] {
 		return this.recipes
 			.filter(recipe => recipe.outputs.some(output => output.item === item.item)) // TODO dictionary for caching
 			.map(recipe => {
@@ -103,12 +122,12 @@ export default class CalculatorService {
 	}
 
 
-	prune(graph: Graph): void {
+	private prune(graph: Graph): void {
 		console.log('Pruning graph');
 	}
 
 
-	simplify(graph: Graph): void {
+	private simplify(graph: Graph): void {
 		console.log('Simplifying graph');
 	}
 }
