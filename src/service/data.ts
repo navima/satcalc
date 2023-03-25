@@ -2,9 +2,12 @@
 import { Item, Recipe, ItemRate } from '../model';
 
 export const items: Map<string, Item> = new Map<string, Item>([
+	// Resources
+	//  Liquid
 	['water', new Item('Water')],
 	['oil', new Item('Oil')],
 
+	//  Solid
 	['ironOre', new Item('Iron ore')],
 	['copperOre', new Item('Copper ore')],
 	['cateriumOre', new Item('Caterium ore')],
@@ -14,6 +17,7 @@ export const items: Map<string, Item> = new Map<string, Item>([
 	['quartz', new Item('Quartz')],
 	['bauxite', new Item('Bauxite')],
 	['uranium', new Item('Uranium')],
+	['compactedCoal', new Item('Compacted coal')],
 
 	['ironIngot', new Item('Iron ingot')],
 	['copperIngot', new Item('Copper ingot')],
@@ -26,8 +30,108 @@ export const items: Map<string, Item> = new Map<string, Item>([
 	['reinforcedIronPlate', new Item('Reinforced iron plate')],
 	['screw', new Item('Screw')],
 	['ironRod', new Item('Iron rod')],
+	['copperSheet', new Item('Copper sheet')],
+	['circuitBoard', new Item('Circuit board')],
+	['motor', new Item('Motor')],
+	['concrete', new Item('Concrete')],
+	['packagedNitrogenGas', new Item('Packaged nitrogen gas')],
+	['nitrogenGas', new Item('Nitrogen gas')],
+	['rubber', new Item('Rubber')],
+	['emptyFluidTank', new Item('Empty fluid tank')],
+	['nitricAcid', new Item('Nitric acid')],
+	['aluminumCasing', new Item('Aluminum casing')],
+	['steelIngot', new Item('Steel ingot')],
+	['nitrogenGas', new Item('Nitrogen gas')],
+	['fuel', new Item('Fuel')],
+	['turbofuel', new Item('Turbofuel')],
+	['fineBlackPowder', new Item('Fine black powder')],
+	['heatSink', new Item('Heat sink')],
+	['coolingSystem', new Item('Cooling system')],
+	['heavyModularFrame', new Item('Heavy modular frame')],
+	['fusedModularFrame', new Item('Fused modular frame')],
+	['compactedCoal', new Item('Compacted coal')],
+	['heavyOil', new Item('Heavy oil residue')],
 ]);
 export const recipes: Recipe[] = [
+	new Recipe(
+		'Unpackage nitrogen gas',
+		'packager',
+		[new ItemRate(items.get('packagedNitrogenGas')!, 60)],
+		[new ItemRate(items.get('nitrogenGas')!, 240), new ItemRate(items.get('emptyFluidTank')!, 60)]
+	),
+	new Recipe(
+		'Cooling system',
+		'Blender',
+		[
+			new ItemRate(items.get('heatSink')!, 12),
+			new ItemRate(items.get('rubber')!, 12),
+			new ItemRate(items.get('water')!, 30),
+			new ItemRate(items.get('nitrogenGas')!, 150)
+		],
+		[new ItemRate(items.get('coolingSystem')!, 6)]
+	),
+	new Recipe(
+		'Fused modular frame',
+		'Blender',
+		[
+			new ItemRate(items.get('heavyModularFrame')!, 1.5),
+			new ItemRate(items.get('aluminumCasing')!, 75),
+			new ItemRate(items.get('nitrogenGas')!, 37.5),
+		],
+		[new ItemRate(items.get('fusedModularFrame')!, 1.5)]
+	),
+	new Recipe(
+		'Nitric acid',
+		'Blender',
+		[
+			new ItemRate(items.get('nitrogenGas')!, 120),
+			new ItemRate(items.get('water')!, 30),
+			new ItemRate(items.get('ironPlate')!, 10)
+		],
+		[new ItemRate(items.get('nitricAcid')!, 30)]
+	),
+	new Recipe(
+		'Packaged nitrogen gas',
+		'packager',
+		[new ItemRate(items.get('nitrogenGas')!, 240), new ItemRate(items.get('emptyFluidTank')!, 60)],
+		[new ItemRate(items.get('packagedNitrogenGas')!, 60)]
+	),
+	new Recipe(
+		'Cooling device',
+		'Blender',
+		[
+			new ItemRate(items.get('heatSink')!, 9.375),
+			new ItemRate(items.get('motor')!, 1.875),
+			new ItemRate(items.get('nitrogenGas')!, 45)
+		],
+		[new ItemRate(items.get('coolingSystem')!, 3.75)],
+		true
+	),
+	new Recipe(
+		'Turbofuel',
+		'refinery',
+		[new ItemRate(items.get('fuel')!, 22.5), new ItemRate(items.get('compactedCoal')!, 15)],
+		[new ItemRate(items.get('turbofuel')!, 18.75)]),
+	new Recipe(
+		'Fine black powder',
+		'assembler',
+		[new ItemRate(items.get('compactedCoal')!, 3.75), new ItemRate(items.get('sulfur')!, 7.5)],
+		[new ItemRate(items.get('fineBlackPowder')!, 15)],
+		true),
+	new Recipe(
+		'Compacted steel ingot',
+		'foundry',
+		[new ItemRate(items.get('ironOre')!, 22.5), new ItemRate(items.get('compactedCoal')!, 11.25)],
+		[new ItemRate(items.get('steelIngot')!, 37.5)],
+		true
+	),
+	new Recipe(
+		'Turbo heavy oil',
+		'refinery',
+		[new ItemRate(items.get('heavyOil')!, 37.5), new ItemRate(items.get('compactedCoal')!, 30)],
+		[new ItemRate(items.get('turbofuel')!, 30)],
+		true
+	),
 	new Recipe(
 		'Plastic',
 		'refinery',
@@ -152,6 +256,8 @@ export const worldData = {
 		[items.get('water')!, Infinity],
 		[items.get('oil')!, 11_700],
 
+		[items.get('nitrogenGas')!, 12_000],
+
 		[items.get('ironOre')!, 70_380],
 		[items.get('copperOre')!, 28_860],
 		[items.get('cateriumOre')!, 11_040],
@@ -161,6 +267,7 @@ export const worldData = {
 		[items.get('quartz')!, 10_500],
 		[items.get('bauxite')!, 9_780],
 		[items.get('uranium')!, 2_100],
+		[items.get('samOre')!, 5_400],
 	]),
 	calculateWP: (item: ItemRate): number => {
 		return item.rate / worldData.maximums.get(item.item)! * 10_000;
