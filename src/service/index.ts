@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Graph, ItemRate, OutputNode, Node, Recipe, RecipeNode, Edge, Item, InputNode } from '../model';
+import { timeMethod } from '../util/timing';
 import { items, recipes } from './data';
 
 export default class CalculatorService {
@@ -11,10 +12,17 @@ export default class CalculatorService {
 
 	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
 		const graph = new Graph([]);
-		this.expand(graph, inputs, outputs);
-		this.prune(graph);
-		this.simplify(graph);
-		console.log(`Created graph with ${graph.nodes.length} nodes, 
+		const expandTime = timeMethod(() => this.expand(graph, inputs, outputs));
+		const pruneTime = timeMethod(() => this.prune(graph));
+		const simplifyTime = timeMethod(() => this.simplify(graph));
+
+		console.log(`Created graph with ${graph.nodes.length} nodes
+took 
+    ${expandTime}
+	${pruneTime}
+	${simplifyTime}
+	----
+	${expandTime + pruneTime + simplifyTime} ms
 roots=[
 	${graph.getRoots().map(n => n.friendlyName).join('\n    ')}
 ], 
