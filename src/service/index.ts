@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import Queue from 'yocto-queue';
 import { Graph, ItemRate, OutputNode, Node, Recipe, RecipeNode, Edge, Item, InputNode } from '../model';
 import { timeMethod } from '../util/timing';
-import { items, recipes } from './data';
+import { items, recipes, worldData } from './data';
 
 export default class CalculatorService {
 	public constructor() {
@@ -13,16 +14,18 @@ export default class CalculatorService {
 	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
 		const graph = new Graph([]);
 		const expandTime = timeMethod(() => this.expand(graph, inputs, outputs));
+		const weightTime = timeMethod(() => this.calculateCost(graph));
 		const pruneTime = timeMethod(() => this.prune(graph));
 		const simplifyTime = timeMethod(() => this.simplify(graph));
 
 		console.log(`Created graph with ${graph.nodes.length} nodes
 took 
-    ${expandTime}
-	${pruneTime}
-	${simplifyTime}
+    expand: ${expandTime}
+	weight: ${weightTime}
+	prune: ${pruneTime}
+	simplify: ${simplifyTime}
 	----
-	${expandTime + pruneTime + simplifyTime} ms
+	${expandTime + pruneTime + simplifyTime + weightTime} ms
 roots=[
 	${graph.getRoots().map(n => n.friendlyName).join('\n    ')}
 ], 
@@ -37,6 +40,7 @@ intermediate=[
 
 	private expand(graph: Graph, inputs: ItemRate[], outputs: ItemRate[]): void {
 		let iterations = 0;
+		// can be breadth or depth first
 		const perimeter: Node[] = [];
 		for (const output of outputs) {
 			const opNode = new OutputNode(output);
@@ -44,7 +48,7 @@ intermediate=[
 			graph.nodes.push(opNode);
 		}
 		while (perimeter.length > 0 && iterations++ < 100) {
-			console.log(perimeter.map(n => n.friendlyName));
+			console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
 			const node = perimeter.pop()!;
 			if (node instanceof OutputNode) {
 				const opNode = node as OutputNode;
@@ -67,6 +71,9 @@ intermediate=[
 					}
 				}
 			}
+		}
+		if (iterations >= 100) {
+			console.error('Max iterations reached!');
 		}
 
 		function addRecipeNodes(recipesProducing: RecipeNode[], outputNode: Node, item: ItemRate) {
@@ -99,6 +106,70 @@ intermediate=[
 			});
 	}
 
+	private calculateCost(graph: Graph): void {
+		console.log('Calculating edge costs');
+		let iterations = 0;
+		// should be breadth first (=queue)
+		const perimeter = new Queue<Node>();
+		const alreadySeen = new Set<Node>();
+		graph.nodes.filter(n => n instanceof InputNode).forEach(n => perimeter.enqueue(n));
+		for (const node of perimeter) {
+			// Filters out nodes the dependencies of which have not been fully calculated yet
+			if (node.incomingEdges.some(e => e.cost === undefined) || alreadySeen.has(node)) {
+				continue;
+			}
+			alreadySeen.add(node);
+			if (iterations++ >= 100) {
+				console.error('Max iterations reached!');
+				break;
+			}
+			const { cost, perimeter: newPerimeter } = this.expandNodeCost(node);
+			node.cost = cost;
+			newPerimeter.forEach(n => perimeter.enqueue(n));
+			console.log('Calculated cost of ' + node.friendlyName + ' and it expands to ' + newPerimeter.map(n => n.friendlyName).join(', '));
+		}
+		console.log(`Calculated edge costs in ${iterations} iterations`);
+	}
+
+	private expandNodeCost(node: Node): { cost: number, perimeter: Node[] } {
+		if (node instanceof InputNode) {
+			const inputNode = node as InputNode;
+			return {
+				cost: worldData.calculateWP(inputNode.item),
+				perimeter: inputNode.outgoingEdges.map(e => e.target)
+			};
+		} else if (node instanceof RecipeNode) {
+			// TODO: Implement pre-pruning of recipes that are too expensive
+			const recipeNode = node as RecipeNode;
+			const satisfyingEdgeSubsets = generateSatisfyingEdgeSubsets(recipeNode);
+			const bestEdgeSubset = selectBestEdgeSubset(satisfyingEdgeSubsets);
+			return {
+				cost: bestEdgeSubset.cost,
+				perimeter: recipeNode.outgoingEdges.flatMap(e => e.target)
+			};
+		} else if (node instanceof OutputNode) {
+			// TODO: Implement pre-pruning of recipes that are too expensive
+			const satisfyingEdgeSubsets = node.incomingEdges.map(e => [e]);
+			const bestEdgeSubset = selectBestEdgeSubset(satisfyingEdgeSubsets);
+			return {
+				cost: bestEdgeSubset.cost,
+				perimeter: []
+			};
+		}
+		throw new Error('This should never happen');
+
+		function generateSatisfyingEdgeSubsets(recipeNode: RecipeNode): Edge[][] {
+			// TODO: actually implement this instead of just returning the superset
+			return [recipeNode.incomingEdges];
+		}
+
+		function selectBestEdgeSubset(subsets: Edge[][]): { cost: number, sub: Edge[] } {
+			return subsets.reduce((bestSubset, currentSubset) => {
+				const subCost = currentSubset.reduce((sum, curr) => sum + curr.cost!, 0); // This non-null assert should never fail
+				return subCost < bestSubset.cost ? { cost: subCost, sub: currentSubset } : bestSubset;
+			}, { cost: Number.MAX_VALUE, sub: [] as Edge[] });
+		}
+	}
 
 	private prune(graph: Graph): void {
 		console.log('Pruning graph');
@@ -109,3 +180,5 @@ intermediate=[
 		console.log('Simplifying graph');
 	}
 }
+
+

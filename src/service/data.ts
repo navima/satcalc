@@ -2,16 +2,71 @@
 import { Item, Recipe, ItemRate } from '../model';
 
 export const items: Map<string, Item> = new Map<string, Item>([
+	['water', new Item('Water')],
+	['oil', new Item('Oil')],
+
 	['ironOre', new Item('Iron ore')],
 	['copperOre', new Item('Copper ore')],
+	['cateriumOre', new Item('Caterium ore')],
+	['limestone', new Item('Limestone')],
+	['coal', new Item('Coal')],
+	['sulfur', new Item('Sulfur')],
+	['quartz', new Item('Quartz')],
+	['bauxite', new Item('Bauxite')],
+	['uranium', new Item('Uranium')],
+
 	['ironIngot', new Item('Iron ingot')],
+	['copperIngot', new Item('Copper ingot')],
+	['cateriumIngot', new Item('Caterium ingot')],
+
+	['plastic', new Item('Plastic')],
+	['heavyOil', new Item('Heavy oil residue')],
+	['wire', new Item('Wire')],
 	['ironPlate', new Item('Iron plate')],
 	['reinforcedIronPlate', new Item('Reinforced iron plate')],
 	['screw', new Item('Screw')],
 	['ironRod', new Item('Iron rod')],
-	['water', new Item('Water')]
 ]);
 export const recipes: Recipe[] = [
+	new Recipe(
+		'Plastic',
+		'refinery',
+		[new ItemRate(items.get('oil')!, 30)],
+		[new ItemRate(items.get('plastic')!, 20), new ItemRate(items.get('heavyOil')!, 10)]
+	),
+	new Recipe(
+		'Coated iron plate',
+		'assembler',
+		[
+			new ItemRate(items.get('ironIngot')!, 50),
+			new ItemRate(items.get('plastic')!, 10)
+		],
+		[new ItemRate(items.get('ironPlate')!, 75)]
+	),
+	new Recipe(
+		'Copper ingot',
+		'smelter',
+		[new ItemRate(items.get('copperOre')!, 30)],
+		[new ItemRate(items.get('copperIngot')!, 30)]
+	),
+	new Recipe(
+		'Wire',
+		'constructor',
+		[new ItemRate(items.get('copperIngot')!, 1)],
+		[new ItemRate(items.get('wire')!, 2)]
+	),
+	new Recipe(
+		'Stitced iron plate',
+		'assembler',
+		[
+			new ItemRate(items.get('ironPlate')!, 18.75),
+			new ItemRate(items.get('wire')!, 37.5)
+		],
+		[
+			new ItemRate(items.get('reinforcedIronPlate')!, 5.625)
+		],
+		true
+	),
 	new Recipe(
 		'Iron alloy ingot',
 		'foundry',
@@ -21,7 +76,8 @@ export const recipes: Recipe[] = [
 		],
 		[
 			new ItemRate(items.get('ironIngot')!, 50)
-		]
+		],
+		true
 	),
 	new Recipe(
 		'Pure iron ingot',
@@ -32,7 +88,8 @@ export const recipes: Recipe[] = [
 		],
 		[
 			new ItemRate(items.get('ironIngot')!, 65)
-		]),
+		],
+		true),
 	{
 		name: 'Reinforced iron plate',
 		machine: 'assembler',
@@ -90,6 +147,25 @@ export const recipes: Recipe[] = [
 		]
 	}
 ];
+export const worldData = {
+	maximums: new Map<Item, number>([
+		[items.get('water')!, Infinity],
+		[items.get('oil')!, 11_700],
+
+		[items.get('ironOre')!, 70_380],
+		[items.get('copperOre')!, 28_860],
+		[items.get('cateriumOre')!, 11_040],
+		[items.get('limestone')!, 52_860],
+		[items.get('coal')!, 30_120],
+		[items.get('sulfur')!, 6_840],
+		[items.get('quartz')!, 10_500],
+		[items.get('bauxite')!, 9_780],
+		[items.get('uranium')!, 2_100],
+	]),
+	calculateWP: (item: ItemRate): number => {
+		return item.rate / worldData.maximums.get(item.item)! * 10_000;
+	}
+};
 
 function validate() {
 	validateItems();
@@ -117,6 +193,9 @@ function validateRecipes() {
 }
 
 function validateItemRate(itemRate: ItemRate) {
+	if (itemRate.item === undefined) {
+		console.error(`Invalid item: ${itemRate.item} in itemRate: `, itemRate);
+	}
 	if (!Array.from(items.values()).includes(itemRate.item)) {
 		console.error(`Invalid item: ${itemRate.item.name} in itemRate: `, itemRate);
 	}

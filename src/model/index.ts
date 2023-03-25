@@ -57,6 +57,7 @@ export class Graph {
 export abstract class Node {
 	public incomingEdges: Edge[] = [];
 	public outgoingEdges: Edge[] = [];
+	public cost = undefined as number | undefined;
 	public get isRoot(): boolean {
 		return this.incomingEdges.length === 0;
 	}
@@ -75,6 +76,9 @@ export class Edge {
 		this.target = target;
 		this.item = item;
 	}
+	public get cost(): number | undefined {
+		return this.source.cost;
+	}
 }
 
 export class RecipeNode extends Node {
@@ -92,7 +96,7 @@ export class RecipeNode extends Node {
 		return this.recipe.outputs.map(output => new ItemRate(output.item, output.rate * this.multiplier));
 	}
 	public get friendlyName(): string {
-		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + '\t' + this.recipe.machine;
+		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + '\t' + this.recipe.machine + '\t WP: ' + this.cost;
 	}
 }
 
@@ -103,7 +107,7 @@ export class OutputNode extends Node {
 		this.item = item;
 	}
 	public get friendlyName(): string {
-		return 'Output: ' + this.item.item.name + ' x' + this.item.rate;
+		return 'Output: ' + this.item.item.name + ' x' + this.item.rate + '\t WP: ' + this.cost;
 	}
 }
 
@@ -114,7 +118,7 @@ export class InputNode extends Node {
 		this.item = item;
 	}
 	public get friendlyName(): string {
-		return 'Input: ' + this.item.item.name + ' x' + this.item.rate;
+		return 'Input: ' + this.item.item.name + ' x' + this.item.rate + '\t WP: ' + this.cost;
 	}
 }
 
