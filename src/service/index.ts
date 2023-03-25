@@ -1,62 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Graph, ItemRate, OutputNode, Node, Recipe, RecipeNode, Edge, Item } from '../model';
+import { Graph, ItemRate, OutputNode, Node, Recipe, RecipeNode, Edge, Item, InputNode } from '../model';
+import { items, recipes } from './data';
 
 export default class CalculatorService {
-	items: Map<string, Item> = new Map<string, Item>([
-		['ironOre', new Item('Iron ore')],
-		['ironIngot', new Item('Iron ingot')],
-		['ironPlate', new Item('Iron plate')],
-		['reinforcedIronPlate', new Item('Reinforced iron plate')],
-		['screw', new Item('Screw')],
-		['ironRod', new Item('Iron rod')]
-	]);
-	recipes: Recipe[] = [
-		{
-			name: 'Reinforced Iron Plate',
-			machine: 'assembler',
-			alt: false,
-			inputs: [
-				{ item: this.items.get('ironPlate')!, rate: 30 },
-				{ item: this.items.get('screw')!, rate: 60 }
-			],
-			outputs: [
-				{ item: this.items.get('reinforcedIronPlate')!, rate: 5 }
-			]
-		},
-		{
-			name: 'Iron Plate',
-			machine: 'constructor',
-			alt: false,
-			inputs: [
-				{ item: this.items.get('ironIngot')!, rate: 30 }
-			],
-			outputs: [
-				{ item: this.items.get('ironPlate')!, rate: 20 }
-			]
-		},
-		{
-			name: 'Screw',
-			machine: 'constructor',
-			alt: false,
-			inputs: [
-				{ item: this.items.get('ironRod')!, rate: 10 }
-			],
-			outputs: [
-				{ item: this.items.get('screw')!, rate: 40 }
-			]
-		},
-		{
-			name: 'Iron Rod',
-			machine: 'constructor',
-			alt: false,
-			inputs: [
-				{ item: this.items.get('ironIngot')!, rate: 15 }
-			],
-			outputs: [
-				{ item: this.items.get('ironRod')!, rate: 15 }
-			]
-		}
-	];
+	public constructor() {
+		console.log('CalculatorService created');
+	}
+	items: Map<string, Item> = items;
+	recipes: Recipe[] = recipes;
 
 	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
 		const graph = new Graph([]);
@@ -86,16 +37,26 @@ intermediate=[
 		}
 		while (perimeter.length > 0 && iterations++ < 100) {
 			console.log(perimeter.map(n => n.getFriendlyName()));
-			const node = perimeter.pop();
+			const node = perimeter.pop()!;
 			if (node instanceof OutputNode) {
 				const opNode = node as OutputNode;
 				const recipesProducing = this.findRecipesProducing(opNode.item);
-				addRecipeNodes(recipesProducing, opNode, opNode.item);
+				if (recipesProducing.length !== 0) {
+					addRecipeNodes(recipesProducing, opNode, opNode.item);
+				} else {
+					console.log('No recipes producing ' + opNode.item.item.name);
+					addInputNodes(opNode, opNode.item);
+				}
 			} else if (node instanceof RecipeNode) {
 				const recipeNode = node as RecipeNode;
 				for (const input of recipeNode.getScaledInputs()) {
 					const recipesProducing = this.findRecipesProducing(input);
-					addRecipeNodes(recipesProducing, recipeNode, input);
+					if (recipesProducing.length !== 0) {
+						addRecipeNodes(recipesProducing, recipeNode, input);
+					} else {
+						console.log('No recipes producing ' + input.item.name);
+						addInputNodes(recipeNode, input);
+					}
 				}
 			}
 		}
@@ -109,6 +70,15 @@ intermediate=[
 				outputNode.incomingEdges.push(edge);
 				perimeter.push(recipeNode);
 			}
+		}
+
+		function addInputNodes(outputNode: Node, item: ItemRate) {
+			const inputNode = new InputNode(item);
+			console.log('Adding input node: ' + inputNode.item.item.name + ' x' + inputNode.item.rate);
+			graph.nodes.push(inputNode);
+			const edge = new Edge(inputNode, outputNode, item);
+			inputNode.outgoingEdges.push(edge);
+			outputNode.incomingEdges.push(edge);
 		}
 	}
 
