@@ -92,7 +92,7 @@ export class RecipeNode extends Node {
 		return this.recipe.outputs.map(output => new ItemRate(output.item, output.rate * this.multiplier));
 	}
 	public getFriendlyName(): string {
-		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier;
+		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + '\t' + this.recipe.machine;
 	}
 }
 
