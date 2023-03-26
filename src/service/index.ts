@@ -14,8 +14,8 @@ export default class CalculatorService {
 	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
 		const graph = new Graph([]);
 		const expandTime = timeMethod(() => this.expand(graph, inputs, outputs));
+		const pruneTime = timeMethod(() => this.pruneUnfinishedChains(graph));
 		const weightTime = timeMethod(() => this.calculateCost(graph));
-		const pruneTime = timeMethod(() => this.prune(graph));
 		const simplifyTime = timeMethod(() => this.simplify(graph));
 
 		console.log(`Created graph with ${graph.nodes.length} nodes
@@ -35,6 +35,8 @@ leaves=[
 intermediate=[
 	${graph.nodes.filter(n => !n.isRoot && !n.isLeaf).map(n => n.friendlyName).join('\n    ')}
 ]`);
+		console.log('Bad WP nodes: ', graph.nodes.filter(n => n instanceof InputNode).map(n => n as InputNode).filter(n => n.cost === undefined || n.cost === null || Number.isNaN(n.cost)).map(n => n.friendlyName).join('\n    '));
+
 		return graph;
 	}
 
@@ -50,7 +52,7 @@ intermediate=[
 		while (perimeter.length > 0 && iterations++ < 1000) {
 			console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
 			const node = perimeter.pop()!;
-			if (node.getDistanceToLeaf() > 15) {
+			if (node.getDistanceToLeaf() > 10) {
 				console.error('Max depth reached!');
 				continue;
 			}
@@ -175,8 +177,31 @@ intermediate=[
 		}
 	}
 
-	private prune(graph: Graph): void {
+	private pruneUnfinishedChains(graph: Graph): void {
 		console.log('Pruning graph');
+		const leaves = graph.nodes.filter(n => n.isLeaf);
+		const toRemove = new Set<Node>();
+		leaves.forEach(node => {
+			prune2(node);
+		});
+		graph.nodes = graph.nodes.filter(n => !toRemove.has(n));
+		console.log('Pruned ' + toRemove.size + ' nodes');
+
+
+		function prune2(node: Node) {
+			const parents = [...node.parents];
+			parents.forEach(parent => {
+				prune2(parent);
+			});
+			if (node.isRoot) {
+				if (!(node instanceof InputNode)) {
+					node.children.forEach(child => {
+						child.removeParent(node);
+					});
+					toRemove.add(node);
+				}
+			}
+		}
 	}
 
 

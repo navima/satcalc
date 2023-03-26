@@ -64,6 +64,19 @@ export abstract class Node {
 	public get isLeaf(): boolean {
 		return this.outgoingEdges.length === 0;
 	}
+	public get children(): Node[] {
+		return this.outgoingEdges.map(edge => edge.target);
+	}
+	public get parents(): Node[] {
+		return this.incomingEdges.map(edge => edge.source);
+	}
+	public removeParent(parent: Node): void {
+		const parentEdges = this.incomingEdges.filter(edge => edge.source === parent);
+		for (const parentEdge of parentEdges) {
+			this.incomingEdges.splice(this.incomingEdges.indexOf(parentEdge), 1);
+			parent.outgoingEdges.splice(parent.outgoingEdges.indexOf(parentEdge), 1);
+		}
+	}
 	public getDistanceToLeaf(): number {
 		if (this.isLeaf) {
 			return 0;

@@ -342,6 +342,26 @@ function readRecipes() {
 			recipe.alt
 		));
 	}
+	worldData.maximums = new Map<Item, number>([
+		[items.get('water')!, Infinity],
+		[items.get('oil')!, 11_700],
+
+		[items.get('nitrogenGas')!, 12_000],
+
+		[items.get('oreIron')!, 70_380],
+		[items.get('oreCopper')!, 28_860],
+		[items.get('oreGold')!, 11_040],
+		[items.get('stone')!, 52_860],
+		[items.get('coal')!, 30_120],
+		[items.get('sulfur')!, 6_840],
+		[items.get('rawQuartz')!, 10_500],
+		[items.get('oreBauxite')!, 9_780],
+		[items.get('oreUranium')!, 2_100],
+		[items.get('samOre')!, 5_400],
+		[items.get('wood')!, 0],
+		[items.get('mycelia')!, 0],
+		[items.get('leaves')!, 0],
+	]);
 }
 
 // no need to validate generated json
