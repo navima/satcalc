@@ -7,7 +7,7 @@ import { Graph, ItemRate } from './model';
 function App() {
 	const [calculatorService, setCalculatorService] = useState(() => new CalculatorService());
 
-	const [item, setItem] = React.useState(calculatorService.items.get('reinforcedIronPlate')!);
+	const [item, setItem] = React.useState(calculatorService.items.get('ironPlateReinforced')!);
 	const [amount, setAmount] = React.useState(60);
 	const [itemInputValue, setItemInputValue] = React.useState(item.name);
 	const [resultGraph, setResultGraph] = useState<Graph>();

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Item, Recipe, ItemRate } from '../model';
+import recipesJson from '../resources/recipes.json';
 
 export const items: Map<string, Item> = new Map<string, Item>([
 	// Resources
@@ -260,12 +261,12 @@ export const worldData = {
 
 		[items.get('ironOre')!, 70_380],
 		[items.get('copperOre')!, 28_860],
-		[items.get('cateriumOre')!, 11_040],
+		[items.get('oreGold')!, 11_040],
 		[items.get('limestone')!, 52_860],
 		[items.get('coal')!, 30_120],
 		[items.get('sulfur')!, 6_840],
 		[items.get('quartz')!, 10_500],
-		[items.get('bauxite')!, 9_780],
+		[items.get('oreBauxite')!, 9_780],
 		[items.get('uranium')!, 2_100],
 		[items.get('samOre')!, 5_400],
 	]),
@@ -323,4 +324,26 @@ function validatePrettyName(s: string) {
 	}
 }
 
-validate();
+function readRecipes() {
+	items.clear();
+	recipes.length = 0;
+	for (const key in recipesJson) {
+		const recipe = recipesJson[key as keyof typeof recipesJson];
+		const recipeItems = recipe.input.concat(recipe.output).map(input => input.name);
+		for (const item of recipeItems)
+			if (!items.has(item))
+				items.set(item, new Item(item));
+
+		recipes.push(new Recipe(
+			recipe.name,
+			recipe.machine[0],
+			recipe.input.map(input => new ItemRate(items.get(input.name)!, input.rate)),
+			recipe.output.map(output => new ItemRate(items.get(output.name)!, output.rate)),
+			recipe.alt
+		));
+	}
+}
+
+// no need to validate generated json
+//validate();
+readRecipes();

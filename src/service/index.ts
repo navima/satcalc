@@ -47,20 +47,21 @@ intermediate=[
 			perimeter.push(opNode);
 			graph.nodes.push(opNode);
 		}
-		while (perimeter.length > 0 && iterations++ < 100) {
+		while (perimeter.length > 0 && iterations++ < 1000) {
 			console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
 			const node = perimeter.pop()!;
 			if (node.getDistanceToLeaf() > 15) {
 				console.error('Max depth reached!');
-				break;
+				continue;
 			}
 			if (node instanceof OutputNode) {
 				const opNode = node as OutputNode;
 				const recipesProducing = this.findRecipesProducing(opNode.item);
 				if (recipesProducing.length !== 0) {
+					console.log('Output - ' + opNode.item.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 					addRecipeNodes(recipesProducing, opNode, opNode.item);
 				} else {
-					console.log('No recipes producing ' + opNode.item.item.name);
+					console.log('Output - ' + opNode.item.item.name + ' -> ' + 'Input node ' + opNode.item.item.name);
 					addInputNodes(opNode, opNode.item);
 				}
 			} else if (node instanceof RecipeNode) {
@@ -68,21 +69,21 @@ intermediate=[
 				for (const input of recipeNode.getScaledInputs()) {
 					const recipesProducing = this.findRecipesProducing(input);
 					if (recipesProducing.length !== 0) {
+						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 						addRecipeNodes(recipesProducing, recipeNode, input);
 					} else {
-						console.log('No recipes producing ' + input.item.name);
+						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
 						addInputNodes(recipeNode, input);
 					}
 				}
 			}
 		}
-		if (iterations >= 100) {
+		if (iterations >= 1000) {
 			console.error('Max iterations reached!');
 		}
 
 		function addRecipeNodes(recipesProducing: RecipeNode[], outputNode: Node, item: ItemRate) {
 			for (const recipeNode of recipesProducing) {
-				console.log('Adding recipe node: ' + recipeNode.recipe.name + ' x' + recipeNode.multiplier);
 				graph.nodes.push(recipeNode);
 				const edge = new Edge(recipeNode, outputNode, item);
 				recipeNode.outgoingEdges.push(edge);
@@ -93,7 +94,6 @@ intermediate=[
 
 		function addInputNodes(outputNode: Node, item: ItemRate) {
 			const inputNode = new InputNode(item);
-			console.log('Adding input node: ' + inputNode.item.item.name + ' x' + inputNode.item.rate);
 			graph.nodes.push(inputNode);
 			const edge = new Edge(inputNode, outputNode, item);
 			inputNode.outgoingEdges.push(edge);
@@ -123,7 +123,7 @@ intermediate=[
 				continue;
 			}
 			alreadySeen.add(node);
-			if (iterations++ >= 100) {
+			if (iterations++ >= 1000) {
 				console.error('Max iterations reached!');
 				break;
 			}
