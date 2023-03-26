@@ -50,6 +50,10 @@ intermediate=[
 		while (perimeter.length > 0 && iterations++ < 100) {
 			console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
 			const node = perimeter.pop()!;
+			if (node.getDistanceToLeaf() > 15) {
+				console.error('Max depth reached!');
+				break;
+			}
 			if (node instanceof OutputNode) {
 				const opNode = node as OutputNode;
 				const recipesProducing = this.findRecipesProducing(opNode.item);

@@ -64,6 +64,12 @@ export abstract class Node {
 	public get isLeaf(): boolean {
 		return this.outgoingEdges.length === 0;
 	}
+	public getDistanceToLeaf(): number {
+		if (this.isLeaf) {
+			return 0;
+		}
+		return Math.min(...this.outgoingEdges.map(edge => edge.target.getDistanceToLeaf())) + 1;
+	}
 	public abstract get friendlyName(): string;
 }
 
