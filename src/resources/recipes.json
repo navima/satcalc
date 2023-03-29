@@ -5293,5 +5293,28 @@
         "rate": 5.0
       }
     ]
+  },
+  "uraniumWaste": {
+    "name": "Uranium Waste",
+    "machine": [
+      "nuclearPowerPlant"
+    ],
+    "alt": false,
+    "input": [
+      {
+        "name": "nuclearFuelRod",
+        "rate": 0.2
+      },
+      {
+        "name": "water",
+        "rate": 240.0
+      }
+    ],
+    "output": [
+      {
+        "name": "nuclearWaste",
+        "rate": 10.0
+      }
+    ]
   }
 }
