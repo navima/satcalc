@@ -24,6 +24,31 @@ export class ItemRate {
 		this.item = item;
 		this.rate = rate;
 	}
+	public static simplify(rates: ItemRate[]): ItemRate[] {
+		const rateMap = new Map<string, number>();
+		for (const rate of rates) {
+			const existingRate = rateMap.get(rate.item.name);
+			if (existingRate) {
+				rateMap.set(rate.item.name, existingRate + rate.rate);
+			} else {
+				rateMap.set(rate.item.name, rate.rate);
+			}
+		}
+		const simplifiedRates: ItemRate[] = [];
+		for (const [name, rate] of rateMap) {
+			simplifiedRates.push(new ItemRate(new Item(name), rate));
+		}
+		return simplifiedRates;
+	}
+	public lessThan(other: ItemRate | undefined): boolean {
+		return this != undefined && other != undefined && this.item.name === other.item.name && this.rate < other.rate;	// TODO: for some reason, this doesn't work with reference comparison, only name
+	}
+	public lessThanOrEqual(other: ItemRate | undefined): boolean {
+		return this != undefined && other != undefined && this.item.name === other.item.name && this.rate <= other.rate; // TODO: for some reason, this doesn't work with reference comparison, only name
+	}
+	public get friendlyName(): string {
+		return `${this.item.name} x ${this.rate.toFixed(2)}`;
+	}
 }
 
 export class Recipe {
@@ -52,6 +77,21 @@ export class Graph {
 	public getLeaves(): Node[] {
 		return this.nodes.filter(node => node.isLeaf);
 	}
+	public delete(node: Node): void {
+		for (const child of node.children) {
+			child.removeParent(node);
+		}
+		for (const parent of node.parents) {
+			parent.removeChild(node);
+		}
+		this.nodes.splice(this.nodes.indexOf(node), 1);
+	}
+	public deleteCascadingTowardsRoot(node: Node): void {
+		for (const parent of node.parents) {
+			this.deleteCascadingTowardsRoot(parent);
+		}
+		this.delete(node);
+	}
 }
 
 export abstract class Node {
@@ -76,6 +116,23 @@ export abstract class Node {
 			this.incomingEdges.splice(this.incomingEdges.indexOf(parentEdge), 1);
 			parent.outgoingEdges.splice(parent.outgoingEdges.indexOf(parentEdge), 1);
 		}
+	}
+	public removeChild(child: Node): void {
+		const childEdges = this.outgoingEdges.filter(edge => edge.target === child);
+		for (const childEdge of childEdges) {
+			this.outgoingEdges.splice(this.outgoingEdges.indexOf(childEdge), 1);
+			child.incomingEdges.splice(child.incomingEdges.indexOf(childEdge), 1);
+		}
+	}
+	public addChild(child: Node, item: ItemRate): void {
+		const edge = new Edge(this, child, item);
+		this.outgoingEdges.push(edge);
+		child.incomingEdges.push(edge);
+	}
+	public addParent(parent: Node, item: ItemRate): void {
+		const edge = new Edge(parent, this, item);
+		this.incomingEdges.push(edge);
+		parent.outgoingEdges.push(edge);
 	}
 	public getDistanceToLeaf(): number {
 		if (this.isLeaf) {
@@ -117,6 +174,12 @@ export class RecipeNode extends Node {
 	public get friendlyName(): string {
 		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + '\t' + this.recipe.machine + '\t WP: ' + this.cost;
 	}
+	public isSatisfiedBy(inputs: ItemRate[]): boolean {
+		return this.getScaledInputs().every(requirement => requirement.lessThanOrEqual(inputs.find(input => input.item.name === requirement.item.name))); // TODO: for some reason, this doesn't work with reference comparison, only name
+	}
+	public isSatisfied(): boolean {
+		return this.isSatisfiedBy(ItemRate.simplify(this.incomingEdges.map(edge => edge.item)));
+	}
 }
 
 export class OutputNode extends Node {
@@ -126,7 +189,7 @@ export class OutputNode extends Node {
 		this.item = item;
 	}
 	public get friendlyName(): string {
-		return 'Output: ' + this.item.item.name + ' x' + this.item.rate + '\t WP: ' + this.cost;
+		return 'Output: ' + this.item.friendlyName + '\t WP: ' + this.cost;
 	}
 }
 
@@ -137,7 +200,7 @@ export class InputNode extends Node {
 		this.item = item;
 	}
 	public get friendlyName(): string {
-		return 'Input: ' + this.item.item.name + ' x' + this.item.rate + '\t WP: ' + this.cost;
+		return 'Input: ' + this.item.friendlyName + '\t WP: ' + this.cost;
 	}
 }
 

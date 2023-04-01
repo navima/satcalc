@@ -200,11 +200,11 @@ export const recipes: Recipe[] = [
 		machine: 'assembler',
 		alt: false,
 		inputs: [
-			{ item: items.get('ironPlate')!, rate: 30 },
-			{ item: items.get('screw')!, rate: 60 }
+			new ItemRate(items.get('ironPlate')!, 30),
+			new ItemRate(items.get('screw')!, 60)
 		],
 		outputs: [
-			{ item: items.get('reinforcedIronPlate')!, rate: 5 }
+			new ItemRate(items.get('reinforcedIronPlate')!,  5 )
 		]
 	},
 	{
@@ -212,10 +212,10 @@ export const recipes: Recipe[] = [
 		machine: 'constructor',
 		alt: false,
 		inputs: [
-			{ item: items.get('ironIngot')!, rate: 30 }
+			new ItemRate(items.get('ironIngot')!,  30 )
 		],
 		outputs: [
-			{ item: items.get('ironPlate')!, rate: 20 }
+			new ItemRate(items.get('ironPlate')!,  20 )
 		]
 	},
 	{
@@ -223,10 +223,10 @@ export const recipes: Recipe[] = [
 		machine: 'constructor',
 		alt: false,
 		inputs: [
-			{ item: items.get('ironRod')!, rate: 10 }
+			new ItemRate(items.get('ironRod')!,  10 )
 		],
 		outputs: [
-			{ item: items.get('screw')!, rate: 40 }
+			new ItemRate(items.get('screw')!,  40 )
 		]
 	},
 	{
@@ -234,10 +234,10 @@ export const recipes: Recipe[] = [
 		machine: 'constructor',
 		alt: false,
 		inputs: [
-			{ item: items.get('ironIngot')!, rate: 15 }
+			new ItemRate(items.get('ironIngot')!,  15 )
 		],
 		outputs: [
-			{ item: items.get('ironRod')!, rate: 15 }
+			new ItemRate(items.get('ironRod')!,  15 )
 		]
 	},
 	{
@@ -245,10 +245,10 @@ export const recipes: Recipe[] = [
 		machine: 'smelter',
 		alt: false,
 		inputs: [
-			{ item: items.get('ironOre')!, rate: 30 }
+			new ItemRate(items.get('ironOre')!,  30 )
 		],
 		outputs: [
-			{ item: items.get('ironIngot')!, rate: 30 }
+			new ItemRate(items.get('ironIngot')!,  30 )
 		]
 	}
 ];

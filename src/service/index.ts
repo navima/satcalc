@@ -10,6 +10,16 @@ export default class CalculatorService {
 	}
 	items: Map<string, Item> = items;
 	recipes: Recipe[] = recipes;
+	bannedIputs: Set<Item> = new Set([
+		items.get('mycelia')!,
+		items.get('wood')!,
+		items.get('leaves')!,
+		items.get('stone')!,
+		items.get('coal')!,
+		items.get('oreUranium')!,
+		items.get('oreBauxite')!,
+		items.get('sulfur')!,
+	]);
 
 	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
 		const graph = new Graph([]);
@@ -63,8 +73,10 @@ intermediate=[
 					console.log('Output - ' + opNode.item.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 					addRecipeNodes(recipesProducing, opNode, opNode.item);
 				} else {
-					console.log('Output - ' + opNode.item.item.name + ' -> ' + 'Input node ' + opNode.item.item.name);
-					addInputNodes(opNode, opNode.item);
+					if (!this.bannedIputs.has(opNode.item.item)) {
+						console.log('Output - ' + opNode.item.item.name + ' -> ' + 'Input node ' + opNode.item.item.name);
+						addInputNodes(opNode, opNode.item);
+					}
 				}
 			} else if (node instanceof RecipeNode) {
 				const recipeNode = node as RecipeNode;
@@ -74,8 +86,10 @@ intermediate=[
 						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 						addRecipeNodes(recipesProducing, recipeNode, input);
 					} else {
-						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
-						addInputNodes(recipeNode, input);
+						if (!this.bannedIputs.has(input.item)) {
+							console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
+							addInputNodes(recipeNode, input);
+						}
 					}
 				}
 			}
@@ -165,8 +179,42 @@ intermediate=[
 		throw new Error('This should never happen');
 
 		function generateSatisfyingEdgeSubsets(recipeNode: RecipeNode): Edge[][] {
-			// TODO: actually implement this instead of just returning the superset
-			return [recipeNode.incomingEdges];
+			console.log(
+				'Generating subsets for ' + recipeNode.recipe.name
+				+ '(' + recipeNode.getScaledInputs().map(ir => ir.friendlyName).join(', ') + ')'
+				+ ' from ' + recipeNode.incomingEdges.map(e => e.item.friendlyName).join(', '));
+			const minimalSubsets = findMinimalSubsets(
+				recipeNode.incomingEdges,
+				edgeSet => recipeNode.isSatisfiedBy(ItemRate.simplify(edgeSet.map(e => e.item))));
+			console.log('Generated subsets for ' + recipeNode.recipe.name + '(' + recipeNode.getScaledInputs().map(ir => ir.item.name + '*' + ir.rate) + ')' + ': ' + minimalSubsets.map(s => s.map(e => e.item.item.name + '*' + e.item.rate).join(', ')).join(' | '));
+			return minimalSubsets;
+		}
+
+		function findMinimalSubsets(inputSet: Edge[], condition: (edgeSet: Edge[]) => boolean): Edge[][] {
+			function backtrack(start: number, currentSubset: Edge[]) {
+				if (condition(currentSubset)) {
+					// check if the current subset is minimal
+					let isMinimal = true;
+					for (let i = 0; i < currentSubset.length; i++) {
+						const subsetWithoutCurrent = currentSubset.slice(0, i).concat(currentSubset.slice(i + 1));
+						if (condition(subsetWithoutCurrent)) {
+							isMinimal = false;
+							break;
+						}
+					}
+					if (isMinimal) {
+						minimalSubsets.push(currentSubset);
+					}
+					return;
+				}
+				for (let i = start; i < inputSet.length; i++) {
+					const newSubset = currentSubset.concat(inputSet[i]);
+					backtrack(i + 1, newSubset);
+				}
+			}
+			const minimalSubsets: Edge[][] = [];
+			backtrack(0, []);
+			return minimalSubsets;
 		}
 
 		function selectBestEdgeSubset(subsets: Edge[][]): { cost: number, sub: Edge[] } {
