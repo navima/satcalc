@@ -65,7 +65,8 @@ class VizService<T> {
 						<text 
 							key={edge.from.id + edge.to.id + 'text'}
 							fontSize={11}
-							textAnchor='middle'>
+							textAnchor='middle'
+							dy={-2}>
 							<textPath href={'#' + edge.from.id + edge.to.id} startOffset='50%'>
 								{edge.label}
 							</textPath>
