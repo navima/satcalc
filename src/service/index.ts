@@ -277,10 +277,6 @@ intermediate=[
 			toRemove.add(node);
 		}
 	}
-
-	private simplify(graph: Graph): void {
-		console.log('Simplifying graph');
-	}
 }
 
 

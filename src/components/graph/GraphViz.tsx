@@ -169,7 +169,7 @@ class VizService<T> {
 
 export function GraphViz<T>(props: GraphVizProps<T>): ReactElement {
 	const { graph, renderNode } = props;
-	const [vizService, setVizService] = useState(() => new VizService(graph, renderNode ?? ((node: Node<unknown>) => <text key={node.id} x={node.x} y={node.y}>{node.label}</text>)));
+	const [vizService] = useState(() => new VizService(graph, renderNode ?? ((node: Node<unknown>) => <text key={node.id} x={node.x} y={node.y}>{node.label}</text>)));
 	const [elements, setElements] = useState<ReactElement[]>([]);
 
 	useEffect(() => {

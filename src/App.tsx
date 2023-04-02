@@ -126,10 +126,9 @@ function renderNode(vizNode: VNode<Node>) {
 }
 
 function App() {
-	const [calculatorService, setCalculatorService] = useState(() => new CalculatorService());
-
-	const [item, setItem] = React.useState(calculatorService.items.get('ironPlate')!);
-	const [amount, setAmount] = React.useState(60);
+	const [calculatorService] = useState(() => new CalculatorService());
+	const [item, setItem] = useState(calculatorService.items.get('ironPlate')!);
+	const [amount, setAmount] = useState(60);
 	const [itemInputValue, setItemInputValue] = React.useState(item.name);
 	const [resultGraph, setResultGraph] = useState<Graph>();
 	const [vizGraph, setVizGraph] = useState<VGraph<Node>>();
