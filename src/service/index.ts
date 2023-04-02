@@ -24,6 +24,7 @@ export default class CalculatorService {
 
 		//Test
 	]).has(r.name)));
+	pruneSuboptimal = true;
 
 	public calculate(inputs: ItemRate[], outputs: ItemRate[], maxIterations = 1000): Graph {
 		const graph = new Graph([]);
@@ -152,8 +153,10 @@ intermediate=[
 			node.cost = cost;
 			newPerimeter.forEach(n => perimeter.enqueue(n));
 			console.log('Calculated cost of ' + node.friendlyName + ' and it expands to ' + newPerimeter.map(n => n.friendlyName).join(', '));
-			if (suboptimal.length > 0) console.log('Also deleted ' + suboptimal.map(e => e.source.friendlyName).join(', ') + ' because they are suboptimal');
-			suboptimal.forEach(e => graph.deleteCascadingTowardsRoot(e.source));
+			if (suboptimal.length > 0 && this.pruneSuboptimal) {
+				console.log('Also deleted ' + suboptimal.map(e => e.source.friendlyName).join(', ') + ' because they are suboptimal');
+				suboptimal.forEach(e => graph.deleteCascadingTowardsRoot(e.source));
+			}
 		}
 		console.log(`Calculated edge costs in ${iterations} iterations`);
 	}

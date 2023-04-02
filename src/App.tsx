@@ -57,7 +57,7 @@ function renderNode(vizNode: VNode<Node>) {
 		label = node.item.friendlyName;
 		height = 30;
 	}
-	if(node.cost === undefined) {
+	if (node.cost === undefined) {
 		color = '#F00';
 	}
 	return (
@@ -134,10 +134,12 @@ function App() {
 	const [resultGraph, setResultGraph] = useState<Graph>();
 	const [vizGraph, setVizGraph] = useState<VGraph<Node>>();
 	const [maxIterations, setMaxIterations] = useState(1000);
+	const [pruneSuboptimal, setPruneSuboptimal] = useState(true);
 
 	useEffect(() => {
+		calculatorService.pruneSuboptimal = pruneSuboptimal;
 		setResultGraph(calculatorService.calculate([], [new ItemRate(item, amount)], maxIterations));
-	}, [item, amount, maxIterations]);
+	}, [item, amount, maxIterations, pruneSuboptimal]);
 
 	useEffect(() => {
 		if (resultGraph) {
@@ -179,14 +181,19 @@ function App() {
 
 	return (
 		<div>
-			<input list='items' value={itemInputValue} onChange={(e) => {
+			<label htmlFor='item'>Item</label>
+			<input id='item' list='items' value={itemInputValue} onChange={(e) => {
 				setItemInputValue(e.target.value);
 				if (calculatorService.items.has(e.target.value)) {
 					setItem(calculatorService.items.get(e.target.value)!);
 				}
 			}} />
-			<input type='number' value={amount} onChange={(e) => setAmount(+e.target.value)} />
-			<input type='number' value={maxIterations} onChange={e => setMaxIterations(+e.target.value)} />
+			<label htmlFor='amount'>Amount</label>
+			<input id='amount' type='number' value={amount} onChange={(e) => setAmount(+e.target.value)} />
+			<label htmlFor='maxIterations'>Max Iterations</label>
+			<input id='maxIterations' type='number' value={maxIterations} onChange={e => setMaxIterations(+e.target.value)} />
+			<label htmlFor='pruneSuboptimal'>Prune Suboptimal</label>
+			<input id='pruneSuboptimal' type='checkbox' checked={pruneSuboptimal} onChange={e => setPruneSuboptimal(e.target.checked)} />
 			<datalist id='items'>
 				{Array.from(calculatorService.items.entries(), entry => (
 					<option key={entry[0]} value={entry[0]}>{entry[1].name}</option>
