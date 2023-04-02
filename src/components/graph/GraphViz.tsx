@@ -14,6 +14,7 @@ export interface Node<T> {
 }
 
 export interface Edge<T> {
+	label: string;
 	from: Node<T>;
 	to: Node<T>;
 }
@@ -29,7 +30,7 @@ export interface GraphVizProps<T> {
 }
 
 class VizService<T> {
-	private graph: Graph<T>;
+	public graph: Graph<T>;
 	private renderNode: (node: Node<T>) => ReactElement;
 	constructor(graph: Graph<T>, nodeFunction: (node: Node<T>) => ReactElement) {
 		this.graph = graph;
@@ -50,7 +51,25 @@ class VizService<T> {
 		return (
 			this.graph.edges
 				.map(edge => (
-					<line key={edge.from.id + edge.to.id} x1={edge.from.x} y1={edge.from.y} x2={edge.to.x} y2={edge.to.y} stroke='black' />
+					<>
+						<line
+							key={edge.from.id + edge.to.id}
+							x1={edge.from.x}
+							y1={edge.from.y}
+							x2={edge.to.x}
+							y2={edge.to.y}
+							stroke='black' />
+						<path
+							key={edge.from.id + edge.to.id + 'path'}
+							d={`M${edge.to.x},${edge.to.y} L${edge.from.x},${edge.from.y}`} id={edge.from.id + edge.to.id} fill='none' />
+						<text 
+							fontSize={11}
+							textAnchor='middle'>
+							<textPath href={'#' + edge.from.id + edge.to.id} startOffset='50%'>
+								{edge.label}
+							</textPath>
+						</text>
+					</>
 				))
 				.concat(renderedNodes));
 	}
@@ -133,16 +152,15 @@ class VizService<T> {
 	private layoutASAP(nodes: Node<T>[]) {
 		const order = this.sortASAP(nodes);
 		for (const [layerIndex, layerNodes] of order.entries()) {
-			//let lastNodeRight = 0;
+			//let lastNodeRight = 0; // TODO: use this to prevent overlap
 			for (const [index, node] of layerNodes.entries()) {
-				const renderedNode = this.renderNode(node);
-				node.x = index * 100;
-				node.y = layerIndex * 60;
+				node.x = index * 150;
+				node.y = layerIndex * 150;
 			}
 		}
 		this.graph.nodes.forEach(node => {
-			node.x += 50;
-			node.y += 50;
+			node.x += 75;
+			node.y += 75;
 		});
 	}
 }
@@ -153,6 +171,7 @@ export function GraphViz<T>(props: GraphVizProps<T>): ReactElement {
 	const [elements, setElements] = useState<ReactElement[]>([]);
 
 	useEffect(() => {
+		vizService.graph = graph;
 		vizService.layout();
 		setElements(vizService.render());
 		console.log('laid out ' + graph.nodes.length + ' nodes' + ' and ' + graph.edges.length + ' edges');
@@ -161,7 +180,7 @@ export function GraphViz<T>(props: GraphVizProps<T>): ReactElement {
 	return (
 		<div>
 			{graph.nodes.length} nodes, {graph.edges.length} edges
-			<svg height={800} width={800}>
+			<svg height={900} width={1000}>
 				{elements}
 			</svg>
 			<svg height={800} width={800}>
