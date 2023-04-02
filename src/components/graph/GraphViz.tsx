@@ -38,11 +38,6 @@ class VizService<T> {
 	}
 
 	public layout(): void {
-		/*this.graph.nodes.forEach((node, i) => {
-			node.x = 100 * (i % 8);
-			node.y = 100 * Math.floor(i / 8);
-		});*/
-		//this.layoutDAG(this.graph.nodes);
 		this.layoutASAP(this.graph.nodes);
 	}
 
@@ -62,7 +57,7 @@ class VizService<T> {
 						<path
 							key={edge.from.id + edge.to.id + 'path'}
 							d={`M${edge.to.x},${edge.to.y} L${edge.from.x},${edge.from.y}`} id={edge.from.id + edge.to.id} fill='none' />
-						<text 
+						<text
 							key={edge.from.id + edge.to.id + 'text'}
 							fontSize={11}
 							textAnchor='middle'
@@ -74,61 +69,6 @@ class VizService<T> {
 					</>
 				))
 				.concat(renderedNodes));
-	}
-
-	private topologicalSort(nodes: Node<T>[]): Node<T>[] {
-		const inDegree = new Map(nodes.map(node => [node, node.incomingEdges.length]));
-
-		const queue = new Queue<Node<T>>();
-		nodes
-			.filter(node => node.incomingEdges.length === 0)
-			.forEach(node => queue.enqueue(node));
-
-		const order = [];
-
-		for (const node of queue) {
-			order.push(node);
-
-			for (const child of node.outgoingEdges.map(edge => edge.to) ?? []) {
-				inDegree.set(child, (inDegree.get(child) ?? 0) - 1);
-
-				if (inDegree.get(child) === 0) {
-					queue.enqueue(child);
-				}
-			}
-		}
-		return order;
-	}
-
-	private layoutDAG(nodes: Node<T>[]) {
-		const order = this.topologicalSort(nodes);
-		const rowPopulation: number[] = [];
-
-		for (const node of order) {
-			let x = 0;
-			let y = 0;
-
-			for (const parent of node.incomingEdges.map(edge => edge.from)) {
-				const px = parent.x;
-				const py = parent.y;
-				// x is the rightmost parent
-				x = Math.max(x, px);
-				// y is the lowest parent + 1
-				y = Math.max(y, py + 1);
-			}
-
-			node.x = x == 0 ? (rowPopulation[y] ?? 0) : x;
-			node.y = y;
-			rowPopulation[y] = (rowPopulation[y] ?? 0) + 1;
-			console.log(node);
-		}
-
-		for (const node of nodes) {
-			node.x *= 30;
-			node.y *= 30;
-			node.x += 30;
-			node.y += 30;
-		}
 	}
 
 	private sortASAP(nodes: Node<T>[]): Node<T>[][] {
