@@ -144,41 +144,44 @@ intermediate=[
 				continue;
 			}
 			alreadySeen.add(node);
-			if (iterations++ >= 1000) {
+			if (iterations++ >= 100000) {
 				console.error('Max iterations reached!');
 				break;
 			}
-			const { cost, perimeter: newPerimeter } = this.expandNodeCost(node);
+			const { cost, perimeter: newPerimeter, suboptimal } = this.expandNodeCost(node);
 			node.cost = cost;
 			newPerimeter.forEach(n => perimeter.enqueue(n));
 			console.log('Calculated cost of ' + node.friendlyName + ' and it expands to ' + newPerimeter.map(n => n.friendlyName).join(', '));
+			if (suboptimal.length > 0) console.log('Also deleted ' + suboptimal.map(e => e.source.friendlyName).join(', ') + ' because they are suboptimal');
+			suboptimal.forEach(e => graph.deleteCascadingTowardsRoot(e.source));
 		}
 		console.log(`Calculated edge costs in ${iterations} iterations`);
 	}
 
-	private expandNodeCost(node: Node): { cost: number, perimeter: Node[] } {
+	private expandNodeCost(node: Node): { cost: number, perimeter: Node[], suboptimal: Edge[] } {
 		if (node instanceof InputNode) {
 			const inputNode = node as InputNode;
 			return {
 				cost: worldData.calculateWP(inputNode.item),
-				perimeter: inputNode.outgoingEdges.map(e => e.target)
+				perimeter: inputNode.outgoingEdges.map(e => e.target),
+				suboptimal: [],
 			};
 		} else if (node instanceof RecipeNode) {
-			// TODO: Implement pre-pruning of recipes that are too expensive
 			const recipeNode = node as RecipeNode;
 			const satisfyingEdgeSubsets = generateSatisfyingEdgeSubsets(recipeNode);
 			const bestEdgeSubset = selectBestEdgeSubset(satisfyingEdgeSubsets);
 			return {
 				cost: bestEdgeSubset.cost,
-				perimeter: recipeNode.outgoingEdges.flatMap(e => e.target)
+				perimeter: recipeNode.outgoingEdges.flatMap(e => e.target),
+				suboptimal: node.incomingEdges.filter(e => !bestEdgeSubset.sub.includes(e)),
 			};
 		} else if (node instanceof OutputNode) {
-			// TODO: Implement pre-pruning of recipes that are too expensive
 			const satisfyingEdgeSubsets = node.incomingEdges.map(e => [e]);
 			const bestEdgeSubset = selectBestEdgeSubset(satisfyingEdgeSubsets);
 			return {
 				cost: bestEdgeSubset.cost,
-				perimeter: []
+				perimeter: [],
+				suboptimal: node.incomingEdges.filter(e => !bestEdgeSubset.sub.includes(e)),
 			};
 		}
 		throw new Error('This should never happen');

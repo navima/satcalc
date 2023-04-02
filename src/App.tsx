@@ -128,7 +128,7 @@ function renderNode(vizNode: VNode<Node>) {
 function App() {
 	const [calculatorService, setCalculatorService] = useState(() => new CalculatorService());
 
-	const [item, setItem] = React.useState(calculatorService.items.get('plastic')!);
+	const [item, setItem] = React.useState(calculatorService.items.get('ironPlate')!);
 	const [amount, setAmount] = React.useState(60);
 	const [itemInputValue, setItemInputValue] = React.useState(item.name);
 	const [resultGraph, setResultGraph] = useState<Graph>();
