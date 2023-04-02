@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Item, Recipe, ItemRate } from '../model';
+import { Item, Recipe, ItemRate } from '../model/model';
 import recipesJson from '../resources/recipes.json';
 
 export const items: Map<string, Item> = new Map<string, Item>([]);

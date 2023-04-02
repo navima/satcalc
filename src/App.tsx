@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import CalculatorService from './service';
-import { Edge, Graph, InputNode, ItemRate, Node, OutputNode, RecipeNode } from './model';
+import CalculatorService from './service/service';
+import { Edge, Graph, InputNode, ItemRate, Node, OutputNode, RecipeNode } from './model/model';
 import { GraphViz, Graph as VGraph, Node as VNode, Edge as VEdge } from './components/graph/GraphViz';
 
 /**
