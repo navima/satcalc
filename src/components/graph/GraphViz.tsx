@@ -28,10 +28,10 @@ export interface GraphVizProps<T> {
 	renderNode?: (node: Node<T>) => ReactElement;
 }
 
-class VizService {
-	private graph: Graph<any>;
-	private renderNode: (node: Node<any>) => ReactElement;
-	constructor(graph: Graph<any>, nodeFunction: (node: Node<any>) => ReactElement) {
+class VizService<T> {
+	private graph: Graph<T>;
+	private renderNode: (node: Node<T>) => ReactElement;
+	constructor(graph: Graph<T>, nodeFunction: (node: Node<T>) => ReactElement) {
 		this.graph = graph;
 		this.renderNode = nodeFunction;
 	}
@@ -55,10 +55,10 @@ class VizService {
 				.concat(renderedNodes));
 	}
 
-	private topologicalSort(nodes: Node<any>[]): Node<any>[] {
+	private topologicalSort(nodes: Node<T>[]): Node<T>[] {
 		const inDegree = new Map(nodes.map(node => [node, node.incomingEdges.length]));
 
-		const queue = new Queue<Node<any>>();
+		const queue = new Queue<Node<T>>();
 		nodes
 			.filter(node => node.incomingEdges.length === 0)
 			.forEach(node => queue.enqueue(node));
@@ -79,7 +79,7 @@ class VizService {
 		return order;
 	}
 
-	private layoutDAG(nodes: Node<any>[]) {
+	private layoutDAG(nodes: Node<T>[]) {
 		const order = this.topologicalSort(nodes);
 		const rowPopulation: number[] = [];
 
@@ -110,14 +110,14 @@ class VizService {
 		}
 	}
 
-	private sortASAP(nodes: Node<any>[]): Node<any>[][] {
-		const queue = new Queue<[number, Node<any>]>();
+	private sortASAP(nodes: Node<T>[]): Node<T>[][] {
+		const queue = new Queue<[number, Node<T>]>();
 		// start with leaves
 		nodes
 			.filter(node => node.outgoingEdges.length === 0)
 			.forEach(node => queue.enqueue([0, node]));
-		const order: Node<any>[][] = [];
-		const seen = new Set<Node<any>>();
+		const order: Node<T>[][] = [];
+		const seen = new Set<Node<T>>();
 		for (const [layer, node] of queue) {
 			if (seen.has(node)) continue; else seen.add(node);
 
@@ -130,7 +130,7 @@ class VizService {
 		return order;
 	}
 
-	private layoutASAP(nodes: Node<any>[]) {
+	private layoutASAP(nodes: Node<T>[]) {
 		const order = this.sortASAP(nodes);
 		for (const [layerIndex, layerNodes] of order.entries()) {
 			//let lastNodeRight = 0;
@@ -147,9 +147,9 @@ class VizService {
 	}
 }
 
-export const GraphViz = (props: GraphVizProps<any>) => {
+export function GraphViz<T>(props: GraphVizProps<T>): ReactElement {
 	const { graph, renderNode } = props;
-	const [vizService, setVizService] = useState(() => new VizService(graph, renderNode ?? ((node: Node<any>) => <text key={node.id} x={node.x} y={node.y}>{node.label}</text>)));
+	const [vizService, setVizService] = useState(() => new VizService(graph, renderNode ?? ((node: Node<unknown>) => <text key={node.id} x={node.x} y={node.y}>{node.label}</text>)));
 	const [elements, setElements] = useState<ReactElement[]>([]);
 
 	useEffect(() => {
@@ -169,4 +169,4 @@ export const GraphViz = (props: GraphVizProps<any>) => {
 			</svg>
 		</div>
 	);
-};
+}
