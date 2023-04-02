@@ -355,13 +355,13 @@
     "input": [
       {
         "name": "liquidOil",
-        "rate": 60000.0
+        "rate": 60.0
       }
     ],
     "output": [
       {
         "name": "liquidFuel",
-        "rate": 40000.0
+        "rate": 40.0
       },
       {
         "name": "polymerResin",
@@ -378,7 +378,7 @@
     "input": [
       {
         "name": "heavyOilResidue",
-        "rate": 40000.0
+        "rate": 40.0
       }
     ],
     "output": [
@@ -397,7 +397,7 @@
     "input": [
       {
         "name": "liquidOil",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
@@ -407,7 +407,7 @@
       },
       {
         "name": "heavyOilResidue",
-        "rate": 10000.0
+        "rate": 10.0
       }
     ]
   },
@@ -420,7 +420,7 @@
     "input": [
       {
         "name": "liquidOil",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
@@ -430,7 +430,7 @@
       },
       {
         "name": "heavyOilResidue",
-        "rate": 20000.0
+        "rate": 20.0
       }
     ]
   },
@@ -443,13 +443,13 @@
     "input": [
       {
         "name": "heavyOilResidue",
-        "rate": 60000.0
+        "rate": 60.0
       }
     ],
     "output": [
       {
         "name": "liquidFuel",
-        "rate": 40000.0
+        "rate": 40.0
       }
     ]
   },
@@ -466,7 +466,7 @@
       },
       {
         "name": "water",
-        "rate": 20000.0
+        "rate": 20.0
       }
     ],
     "output": [
@@ -489,7 +489,7 @@
       },
       {
         "name": "water",
-        "rate": 40000.0
+        "rate": 40.0
       }
     ],
     "output": [
@@ -623,7 +623,7 @@
       },
       {
         "name": "heavyOilResidue",
-        "rate": 15000.0
+        "rate": 15.0
       }
     ],
     "output": [
@@ -703,7 +703,7 @@
     "input": [
       {
         "name": "liquidFuel",
-        "rate": 40000.0
+        "rate": 40.0
       },
       {
         "name": "fluidCanister",
@@ -730,13 +730,13 @@
       },
       {
         "name": "water",
-        "rate": 45000.0
+        "rate": 45.0
       }
     ],
     "output": [
       {
         "name": "liquidBiofuel",
-        "rate": 60000.0
+        "rate": 60.0
       }
     ]
   },
@@ -749,7 +749,7 @@
     "input": [
       {
         "name": "liquidBiofuel",
-        "rate": 40000.0
+        "rate": 40.0
       },
       {
         "name": "fluidCanister",
@@ -772,7 +772,7 @@
     "input": [
       {
         "name": "liquidOil",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "fluidCanister",
@@ -795,7 +795,7 @@
     "input": [
       {
         "name": "heavyOilResidue",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "fluidCanister",
@@ -818,7 +818,7 @@
     "input": [
       {
         "name": "water",
-        "rate": 60000.0
+        "rate": 60.0
       },
       {
         "name": "fluidCanister",
@@ -847,7 +847,7 @@
     "output": [
       {
         "name": "liquidBiofuel",
-        "rate": 60000.0
+        "rate": 60.0
       },
       {
         "name": "fluidCanister",
@@ -870,7 +870,7 @@
     "output": [
       {
         "name": "liquidFuel",
-        "rate": 60000.0
+        "rate": 60.0
       },
       {
         "name": "fluidCanister",
@@ -893,7 +893,7 @@
     "output": [
       {
         "name": "liquidOil",
-        "rate": 60000.0
+        "rate": 60.0
       },
       {
         "name": "fluidCanister",
@@ -916,7 +916,7 @@
     "output": [
       {
         "name": "heavyOilResidue",
-        "rate": 20000.0
+        "rate": 20.0
       },
       {
         "name": "fluidCanister",
@@ -939,7 +939,7 @@
     "output": [
       {
         "name": "water",
-        "rate": 120000.0
+        "rate": 120.0
       },
       {
         "name": "fluidCanister",
@@ -1048,7 +1048,7 @@
     "input": [
       {
         "name": "heavyOilResidue",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "packagedWater",
@@ -1071,7 +1071,7 @@
     "input": [
       {
         "name": "aluminaSolution",
-        "rate": 180000.0
+        "rate": 180.0
       },
       {
         "name": "petroleumCoke",
@@ -1085,7 +1085,7 @@
       },
       {
         "name": "water",
-        "rate": 105000.0
+        "rate": 105.0
       }
     ]
   },
@@ -1106,7 +1106,7 @@
       },
       {
         "name": "sulfuricAcid",
-        "rate": 40000.0
+        "rate": 40.0
       }
     ],
     "output": [
@@ -1116,7 +1116,7 @@
       },
       {
         "name": "sulfuricAcid",
-        "rate": 10000.0
+        "rate": 10.0
       }
     ]
   },
@@ -1137,11 +1137,11 @@
       },
       {
         "name": "water",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "nitrogenGas",
-        "rate": 150000.0
+        "rate": 150.0
       }
     ],
     "output": [
@@ -1160,11 +1160,11 @@
     "input": [
       {
         "name": "nitrogenGas",
-        "rate": 120000.0
+        "rate": 120.0
       },
       {
         "name": "water",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "ironPlate",
@@ -1174,7 +1174,7 @@
     "output": [
       {
         "name": "nitricAcid",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ]
   },
@@ -1195,11 +1195,11 @@
       },
       {
         "name": "nitricAcid",
-        "rate": 15000.0
+        "rate": 15.0
       },
       {
         "name": "sulfuricAcid",
-        "rate": 15000.0
+        "rate": 15.0
       }
     ],
     "output": [
@@ -1209,7 +1209,7 @@
       },
       {
         "name": "water",
-        "rate": 15000.0
+        "rate": 15.0
       }
     ]
   },
@@ -1295,13 +1295,13 @@
       },
       {
         "name": "water",
-        "rate": 180000.0
+        "rate": 180.0
       }
     ],
     "output": [
       {
         "name": "aluminaSolution",
-        "rate": 120000.0
+        "rate": 120.0
       },
       {
         "name": "silica",
@@ -1318,7 +1318,7 @@
     "input": [
       {
         "name": "aluminaSolution",
-        "rate": 240000.0
+        "rate": 240.0
       },
       {
         "name": "coal",
@@ -1332,7 +1332,7 @@
       },
       {
         "name": "water",
-        "rate": 120000.0
+        "rate": 120.0
       }
     ]
   },
@@ -1345,7 +1345,7 @@
     "input": [
       {
         "name": "aluminaSolution",
-        "rate": 120000.0
+        "rate": 120.0
       },
       {
         "name": "fluidCanister",
@@ -1462,7 +1462,7 @@
     "output": [
       {
         "name": "aluminaSolution",
-        "rate": 120000.0
+        "rate": 120.0
       },
       {
         "name": "fluidCanister",
@@ -1672,13 +1672,13 @@
     "input": [
       {
         "name": "liquidOil",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
       {
         "name": "heavyOilResidue",
-        "rate": 40000.0
+        "rate": 40.0
       },
       {
         "name": "polymerResin",
@@ -1895,7 +1895,7 @@
     "input": [
       {
         "name": "liquidOil",
-        "rate": 60000.0
+        "rate": 60.0
       }
     ],
     "output": [
@@ -1905,7 +1905,7 @@
       },
       {
         "name": "heavyOilResidue",
-        "rate": 20000.0
+        "rate": 20.0
       }
     ]
   },
@@ -1941,7 +1941,7 @@
       },
       {
         "name": "water",
-        "rate": 24000.0
+        "rate": 24.0
       }
     ],
     "output": [
@@ -1964,7 +1964,7 @@
       },
       {
         "name": "water",
-        "rate": 10000.0
+        "rate": 10.0
       }
     ],
     "output": [
@@ -1987,7 +1987,7 @@
       },
       {
         "name": "water",
-        "rate": 20000.0
+        "rate": 20.0
       }
     ],
     "output": [
@@ -2010,7 +2010,7 @@
       },
       {
         "name": "water",
-        "rate": 37500.0
+        "rate": 37.5
       }
     ],
     "output": [
@@ -2033,7 +2033,7 @@
       },
       {
         "name": "liquidFuel",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
@@ -2079,7 +2079,7 @@
       },
       {
         "name": "water",
-        "rate": 22500.0
+        "rate": 22.5
       }
     ],
     "output": [
@@ -2243,7 +2243,7 @@
     "input": [
       {
         "name": "heavyOilResidue",
-        "rate": 37500.0
+        "rate": 37.5
       },
       {
         "name": "compactedCoal",
@@ -2253,7 +2253,7 @@
     "output": [
       {
         "name": "liquidTurboFuel",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ]
   },
@@ -2266,7 +2266,7 @@
     "input": [
       {
         "name": "liquidTurboFuel",
-        "rate": 20000.0
+        "rate": 20.0
       },
       {
         "name": "fluidCanister",
@@ -2295,7 +2295,7 @@
     "output": [
       {
         "name": "liquidTurboFuel",
-        "rate": 20000.0
+        "rate": 20.0
       },
       {
         "name": "fluidCanister",
@@ -2377,7 +2377,7 @@
       },
       {
         "name": "water",
-        "rate": 100000.0
+        "rate": 100.0
       }
     ],
     "output": [
@@ -2481,11 +2481,11 @@
     "input": [
       {
         "name": "sulfuricAcid",
-        "rate": 50000.0
+        "rate": 50.0
       },
       {
         "name": "aluminaSolution",
-        "rate": 40000.0
+        "rate": 40.0
       },
       {
         "name": "aluminumCasing",
@@ -2499,7 +2499,7 @@
       },
       {
         "name": "water",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ]
   },
@@ -2547,13 +2547,13 @@
       },
       {
         "name": "water",
-        "rate": 50000.0
+        "rate": 50.0
       }
     ],
     "output": [
       {
         "name": "sulfuricAcid",
-        "rate": 50000.0
+        "rate": 50.0
       }
     ]
   },
@@ -2566,7 +2566,7 @@
     "input": [
       {
         "name": "sulfuricAcid",
-        "rate": 40000.0
+        "rate": 40.0
       },
       {
         "name": "fluidCanister",
@@ -2645,7 +2645,7 @@
     "output": [
       {
         "name": "sulfuricAcid",
-        "rate": 60000.0
+        "rate": 60.0
       },
       {
         "name": "fluidCanister",
@@ -2670,7 +2670,7 @@
       },
       {
         "name": "nitrogenGas",
-        "rate": 45000.0
+        "rate": 45.0
       }
     ],
     "output": [
@@ -2720,7 +2720,7 @@
       },
       {
         "name": "nitrogenGas",
-        "rate": 37500.0
+        "rate": 37.5
       }
     ],
     "output": [
@@ -2758,7 +2758,7 @@
     "input": [
       {
         "name": "nitrogenGas",
-        "rate": 240000.0
+        "rate": 240.0
       },
       {
         "name": "gasTank",
@@ -2787,7 +2787,7 @@
     "output": [
       {
         "name": "nitrogenGas",
-        "rate": 240000.0
+        "rate": 240.0
       },
       {
         "name": "gasTank",
@@ -2804,17 +2804,17 @@
     "input": [
       {
         "name": "heavyOilResidue",
-        "rate": 50000.0
+        "rate": 50.0
       },
       {
         "name": "water",
-        "rate": 100000.0
+        "rate": 100.0
       }
     ],
     "output": [
       {
         "name": "liquidFuel",
-        "rate": 100000.0
+        "rate": 100.0
       }
     ]
   },
@@ -2858,11 +2858,11 @@
       },
       {
         "name": "nitricAcid",
-        "rate": 15000.0
+        "rate": 15.0
       },
       {
         "name": "sulfuricAcid",
-        "rate": 25000.0
+        "rate": 25.0
       }
     ],
     "output": [
@@ -2872,7 +2872,7 @@
       },
       {
         "name": "water",
-        "rate": 40000.0
+        "rate": 40.0
       }
     ]
   },
@@ -3004,7 +3004,7 @@
     "input": [
       {
         "name": "nitricAcid",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "gasTank",
@@ -3056,7 +3056,7 @@
     "output": [
       {
         "name": "nitricAcid",
-        "rate": 20000.0
+        "rate": 20.0
       },
       {
         "name": "gasTank",
@@ -3081,11 +3081,11 @@
       },
       {
         "name": "nitricAcid",
-        "rate": 24000.0
+        "rate": 24.0
       },
       {
         "name": "liquidFuel",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
@@ -3135,11 +3135,11 @@
       },
       {
         "name": "sulfuricAcid",
-        "rate": 50000.0
+        "rate": 50.0
       },
       {
         "name": "water",
-        "rate": 60000.0
+        "rate": 60.0
       }
     ],
     "output": [
@@ -3149,7 +3149,7 @@
       },
       {
         "name": "water",
-        "rate": 50000.0
+        "rate": 50.0
       }
     ]
   },
@@ -3243,13 +3243,13 @@
       },
       {
         "name": "water",
-        "rate": 200000.0
+        "rate": 200.0
       }
     ],
     "output": [
       {
         "name": "aluminaSolution",
-        "rate": 240000.0
+        "rate": 240.0
       }
     ]
   },
@@ -3262,7 +3262,7 @@
     "input": [
       {
         "name": "computer",
-        "rate": 3.5999999999999996
+        "rate": 3.6
       },
       {
         "name": "electromagneticControlRod",
@@ -3320,7 +3320,7 @@
       },
       {
         "name": "steelPlateReinforced",
-        "rate": 1.2000000000000002
+        "rate": 1.2
       },
       {
         "name": "electromagneticControlRod",
@@ -3370,11 +3370,11 @@
     "input": [
       {
         "name": "liquidFuel",
-        "rate": 15000.0
+        "rate": 15.0
       },
       {
         "name": "heavyOilResidue",
-        "rate": 30000.0
+        "rate": 30.0
       },
       {
         "name": "sulfur",
@@ -3388,7 +3388,7 @@
     "output": [
       {
         "name": "liquidTurboFuel",
-        "rate": 45000.0
+        "rate": 45.0
       }
     ]
   },
@@ -3924,17 +3924,17 @@
       },
       {
         "name": "crystalOscillator",
-        "rate": 0.6000000000000001
+        "rate": 0.6
       },
       {
         "name": "equipmentDescriptorBeacon",
-        "rate": 1.2000000000000002
+        "rate": 1.2
       }
     ],
     "output": [
       {
         "name": "nuclearFuelRod",
-        "rate": 0.6000000000000001
+        "rate": 0.6
       }
     ]
   },
@@ -3951,7 +3951,7 @@
       },
       {
         "name": "liquidFuel",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
@@ -4196,7 +4196,7 @@
     "input": [
       {
         "name": "liquidFuel",
-        "rate": 22500.0
+        "rate": 22.5
       },
       {
         "name": "compactedCoal",
@@ -4206,7 +4206,7 @@
     "output": [
       {
         "name": "liquidTurboFuel",
-        "rate": 18750.0
+        "rate": 18.75
       }
     ]
   },
@@ -4567,7 +4567,7 @@
     "output": [
       {
         "name": "genericBiomass",
-        "rate": 1500.0
+        "rate": 1.5
       }
     ]
   },
@@ -4729,7 +4729,7 @@
       },
       {
         "name": "water",
-        "rate": 30000.0
+        "rate": 30.0
       }
     ],
     "output": [
@@ -4901,7 +4901,7 @@
       },
       {
         "name": "heavyOilResidue",
-        "rate": 10000.0
+        "rate": 10.0
       }
     ],
     "output": [
