@@ -36,8 +36,8 @@ function renderNode(vizNode: VNode<Node>) {
 		'input': '#D66',
 		'output': '#0F0'
 	};
-	const width = 120;
-	const height = 60;
+	const width = 130;
+	let height = 80;
 	let color = colorMap['default'];
 	let label = node.friendlyName;
 	let inputs: ItemRate[] = [];
@@ -45,17 +45,20 @@ function renderNode(vizNode: VNode<Node>) {
 	if (node instanceof RecipeNode) {
 		const recipeNode = node as RecipeNode;
 		color = colorMap['recipe'];
-		label = recipeNode.multiplier.toFixed(2) + 'x ' + recipeNode.recipe.name + '\n';
+		label = recipeNode.multiplier.toFixed(2) + 'x ' + recipeNode.recipe.name;
 		inputs = recipeNode.getScaledInputs();
 		outputs = recipeNode.getScaledOutputs();
 	} else if (node instanceof InputNode) {
 		color = colorMap['input'];
 		label = node.item.friendlyName;
-		outputs = [node.item];
+		height = 30;
 	} else if (node instanceof OutputNode) {
 		color = colorMap['output'];
 		label = node.item.friendlyName;
-		inputs = [node.item];
+		height = 30;
+	}
+	if(node.cost === undefined) {
+		color = '#F00';
 	}
 	return (
 		<svg key={vizNode.id}
@@ -95,6 +98,9 @@ function renderNode(vizNode: VNode<Node>) {
 						}}>
 						{label}
 					</div>
+					<div>
+						{node.cost?.toFixed(2)}
+					</div>
 					<table>
 						<tbody>
 							{inputs.map(item => (
@@ -122,15 +128,16 @@ function renderNode(vizNode: VNode<Node>) {
 function App() {
 	const [calculatorService, setCalculatorService] = useState(() => new CalculatorService());
 
-	const [item, setItem] = React.useState(calculatorService.items.get('ironIngot')!);
+	const [item, setItem] = React.useState(calculatorService.items.get('plastic')!);
 	const [amount, setAmount] = React.useState(60);
 	const [itemInputValue, setItemInputValue] = React.useState(item.name);
 	const [resultGraph, setResultGraph] = useState<Graph>();
 	const [vizGraph, setVizGraph] = useState<VGraph<Node>>();
+	const [maxIterations, setMaxIterations] = useState(1000);
 
 	useEffect(() => {
-		setResultGraph(calculatorService.calculate([], [new ItemRate(item, amount)]));
-	}, [item, amount]);
+		setResultGraph(calculatorService.calculate([], [new ItemRate(item, amount)], maxIterations));
+	}, [item, amount, maxIterations]);
 
 	useEffect(() => {
 		if (resultGraph) {
@@ -179,6 +186,7 @@ function App() {
 				}
 			}} />
 			<input type='number' value={amount} onChange={(e) => setAmount(+e.target.value)} />
+			<input type='number' value={maxIterations} onChange={e => setMaxIterations(+e.target.value)} />
 			<datalist id='items'>
 				{Array.from(calculatorService.items.entries(), entry => (
 					<option key={entry[0]} value={entry[0]}>{entry[1].name}</option>

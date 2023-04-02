@@ -9,24 +9,28 @@ export default class CalculatorService {
 		console.log('CalculatorService created');
 	}
 	items: Map<string, Item> = items;
+	inputItems: Set<Item> = new Set(worldData.maximums.keys());
 	recipes: Recipe[] = recipes;
-	bannedIputs: Set<Item> = new Set([
+	bannedInputs: Set<Item> = new Set([
 		items.get('mycelia')!,
 		items.get('wood')!,
 		items.get('leaves')!,
-		items.get('stone')!,
-		items.get('coal')!,
-		items.get('oreUranium')!,
-		items.get('oreBauxite')!,
-		items.get('sulfur')!,
 	]);
+	bannedRecipes: Set<Recipe> = new Set(recipes.filter(r => new Set([
+		'Unpackage Oil',
+		'Unpackage Liquid Biofuel',
+		'Unpackage Heavy Oil Residue',
+		'Unpackage Fuel',
 
-	public calculate(inputs: ItemRate[], outputs: ItemRate[]): Graph {
+		//Test
+	]).has(r.name)));
+
+	public calculate(inputs: ItemRate[], outputs: ItemRate[], maxIterations = 1000): Graph {
 		const graph = new Graph([]);
-		const expandTime = timeMethod(() => this.expand(graph, inputs, outputs));
+		const expandTime = timeMethod(() => this.expand(graph, inputs, outputs, maxIterations));
 		const pruneTime = timeMethod(() => this.pruneUnfinishedChains(graph));
 		const weightTime = timeMethod(() => this.calculateCost(graph));
-		const simplifyTime = timeMethod(() => this.simplify(graph));
+		const simplifyTime = 0;//timeMethod(() => this.simplify(graph));
 
 		console.log(`Created graph with ${graph.nodes.length} nodes
 took 
@@ -50,19 +54,21 @@ intermediate=[
 		return graph;
 	}
 
-	private expand(graph: Graph, inputs: ItemRate[], outputs: ItemRate[]): void {
+	private expand(graph: Graph, inputs: ItemRate[], outputs: ItemRate[], maxIterations = 1000): void {
 		let iterations = 0;
-		// can be breadth or depth first
-		const perimeter: Node[] = [];
+		// breadth first (queue)
+		const perimeter = new Queue<Node>();
 		for (const output of outputs) {
 			const opNode = new OutputNode(output);
-			perimeter.push(opNode);
+			perimeter.enqueue(opNode);
 			graph.nodes.push(opNode);
 		}
-		while (perimeter.length > 0 && iterations++ < 1000) {
-			console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
-			const node = perimeter.pop()!;
-			if (node.getDistanceToLeaf() > 10) {
+		while (perimeter.size > 0 && iterations++ < maxIterations) {
+			//console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
+			const node = perimeter.dequeue()!;
+			console.log('Expanding node: ', node.friendlyName + ' (' + node.getDistanceToLeaf() + ')');
+
+			if (node.getDistanceToLeaf() > 20) {
 				console.error('Max depth reached!');
 				continue;
 			}
@@ -72,11 +78,10 @@ intermediate=[
 				if (recipesProducing.length !== 0) {
 					console.log('Output - ' + opNode.item.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 					addRecipeNodes(recipesProducing, opNode, opNode.item);
-				} else {
-					if (!this.bannedIputs.has(opNode.item.item)) {
-						console.log('Output - ' + opNode.item.item.name + ' -> ' + 'Input node ' + opNode.item.item.name);
-						addInputNodes(opNode, opNode.item);
-					}
+				}
+				if (!this.bannedInputs.has(opNode.item.item) && this.inputItems.has(opNode.item.item)) {
+					console.log('Output - ' + opNode.item.item.name + ' -> ' + 'Input node ' + opNode.item.item.name);
+					addInputNodes(opNode, opNode.item);
 				}
 			} else if (node instanceof RecipeNode) {
 				const recipeNode = node as RecipeNode;
@@ -85,16 +90,15 @@ intermediate=[
 					if (recipesProducing.length !== 0) {
 						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 						addRecipeNodes(recipesProducing, recipeNode, input);
-					} else {
-						if (!this.bannedIputs.has(input.item)) {
-							console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
-							addInputNodes(recipeNode, input);
-						}
+					}
+					if (!this.bannedInputs.has(input.item) && this.inputItems.has(input.item)) {
+						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
+						addInputNodes(recipeNode, input);
 					}
 				}
 			}
 		}
-		if (iterations >= 1000) {
+		if (iterations >= maxIterations) {
 			console.error('Max iterations reached!');
 		}
 
@@ -104,7 +108,7 @@ intermediate=[
 				const edge = new Edge(recipeNode, outputNode, item);
 				recipeNode.outgoingEdges.push(edge);
 				outputNode.incomingEdges.push(edge);
-				perimeter.push(recipeNode);
+				perimeter.enqueue(recipeNode);
 			}
 		}
 
@@ -120,6 +124,7 @@ intermediate=[
 	private findRecipesProducing(item: ItemRate): RecipeNode[] {
 		return this.recipes
 			.filter(recipe => recipe.outputs.some(output => output.item === item.item)) // TODO dictionary for caching
+			.filter(recipe => !this.bannedRecipes.has(recipe))
 			.map(recipe => {
 				const multiplier = item.rate / recipe.outputs.find(output => output.item === item.item)!.rate;
 				return new RecipeNode(recipe, multiplier);
@@ -237,21 +242,35 @@ intermediate=[
 
 
 		function prune2(node: Node) {
-			const parents = [...node.parents];
+			const parents = [...node.parents]; // create copy
 			parents.forEach(parent => {
 				prune2(parent);
 			});
 			if (node.isRoot) {
-				if (!(node instanceof InputNode)) {
+				if (node instanceof RecipeNode) {
 					node.children.forEach(child => {
 						child.removeParent(node);
 					});
 					toRemove.add(node);
 				}
+			} else {
+				if (node instanceof RecipeNode && !node.isSatisfied()) {
+					console.warn(node);
+					node.children.forEach(child => {
+						child.removeParent(node);
+					});
+					markForDeletionCascadingTowardsRoot(node);
+				}
 			}
 		}
-	}
 
+		function markForDeletionCascadingTowardsRoot(node: Node) {
+			node.parents.forEach(parent => {
+				markForDeletionCascadingTowardsRoot(parent);
+			});
+			toRemove.add(node);
+		}
+	}
 
 	private simplify(graph: Graph): void {
 		console.log('Simplifying graph');

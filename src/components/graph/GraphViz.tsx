@@ -63,6 +63,7 @@ class VizService<T> {
 							key={edge.from.id + edge.to.id + 'path'}
 							d={`M${edge.to.x},${edge.to.y} L${edge.from.x},${edge.from.y}`} id={edge.from.id + edge.to.id} fill='none' />
 						<text 
+							key={edge.from.id + edge.to.id + 'text'}
 							fontSize={11}
 							textAnchor='middle'>
 							<textPath href={'#' + edge.from.id + edge.to.id} startOffset='50%'>
@@ -180,10 +181,7 @@ export function GraphViz<T>(props: GraphVizProps<T>): ReactElement {
 	return (
 		<div>
 			{graph.nodes.length} nodes, {graph.edges.length} edges
-			<svg height={900} width={1000}>
-				{elements}
-			</svg>
-			<svg height={800} width={800}>
+			<svg height={3000} width={3000}>
 				{elements}
 			</svg>
 		</div>

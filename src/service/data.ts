@@ -255,7 +255,7 @@ export const recipes: Recipe[] = [
 export const worldData = {
 	maximums: new Map<Item, number>([
 		[items.get('water')!, Infinity],
-		[items.get('oil')!, 11_700],
+		[items.get('liquidOil')!, 11_700],
 
 		[items.get('nitrogenGas')!, 12_000],
 
@@ -344,7 +344,7 @@ function readRecipes() {
 	}
 	worldData.maximums = new Map<Item, number>([
 		[items.get('water')!, Infinity],
-		[items.get('oil')!, 11_700],
+		[items.get('liquidOil')!, 11_700],
 
 		[items.get('nitrogenGas')!, 12_000],
 
