@@ -172,7 +172,7 @@ export class RecipeNode extends Node {
 		return this.recipe.outputs.map(output => new ItemRate(output.item, output.rate * this.multiplier));
 	}
 	public get friendlyName(): string {
-		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + ' WP: ' + this.cost?.toFixed(4);
+		return 'Recipe: ' + this.recipe.name + ' x' + this.multiplier + (this.cost? ' WP: ' + this.cost?.toFixed(4) : '');
 	}
 	public isSatisfiedBy(inputs: ItemRate[]): boolean {
 		return this.getScaledInputs().every(requirement => requirement.lessThanOrEqual(inputs.find(input => input.item.name === requirement.item.name))); // TODO: for some reason, this doesn't work with reference comparison, only name
@@ -189,7 +189,7 @@ export class OutputNode extends Node {
 		this.item = item;
 	}
 	public get friendlyName(): string {
-		return 'Output: ' + this.item.friendlyName + ' WP: ' + this.cost?.toFixed(4);
+		return 'Output: ' + this.item.friendlyName + (this.cost? ' WP: ' + this.cost?.toFixed(4) : '');
 	}
 }
 
@@ -200,7 +200,7 @@ export class InputNode extends Node {
 		this.item = item;
 	}
 	public get friendlyName(): string {
-		return 'Input: ' + this.item.friendlyName + ' WP: ' + this.cost?.toFixed(4);
+		return 'Input: ' + this.item.friendlyName + (this.cost? ' WP: ' + this.cost?.toFixed(4) : '');
 	}
 }
 

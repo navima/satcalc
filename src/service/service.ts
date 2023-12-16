@@ -67,7 +67,7 @@ intermediate=[
 		while (perimeter.size > 0 && iterations++ < maxIterations) {
 			//console.log('Perimeter:\n   ', perimeter.map(n => n.friendlyName).join('\n    '));
 			const node = perimeter.dequeue()!;
-			console.log('Expanding node: ', node.friendlyName + ' (' + node.getDistanceToLeaf() + ')');
+			console.log('Expanding node: ', node.friendlyName + ' (depth ' + node.getDistanceToLeaf() + ')');
 
 			if (node.getDistanceToLeaf() > 20) {
 				console.error('Max depth reached!');
@@ -77,11 +77,11 @@ intermediate=[
 				const opNode = node as OutputNode;
 				const recipesProducing = this.findRecipesProducing(opNode.item);
 				if (recipesProducing.length !== 0) {
-					console.log('Output - ' + opNode.item.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
+					console.log('Output - ' + node.item.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 					addRecipeNodes(recipesProducing, opNode, opNode.item);
 				}
 				if (!this.bannedInputs.has(opNode.item.item) && this.inputItems.has(opNode.item.item)) {
-					console.log('Output - ' + opNode.item.item.name + ' -> ' + 'Input node ' + opNode.item.item.name);
+					console.log('Output - ' + node.item.item.name + ' -> ' + 'Input node ' + node.item.item.name);
 					addInputNodes(opNode, opNode.item);
 				}
 			} else if (node instanceof RecipeNode) {
@@ -89,11 +89,11 @@ intermediate=[
 				for (const input of recipeNode.getScaledInputs()) {
 					const recipesProducing = this.findRecipesProducing(input);
 					if (recipesProducing.length !== 0) {
-						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
+						console.log(node.recipe.name + ' - ' + input.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
 						addRecipeNodes(recipesProducing, recipeNode, input);
 					}
 					if (!this.bannedInputs.has(input.item) && this.inputItems.has(input.item)) {
-						console.log(recipeNode.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
+						console.log(node.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
 						addInputNodes(recipeNode, input);
 					}
 				}
