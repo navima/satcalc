@@ -166,7 +166,7 @@ function App() {
 				.map(edge => ({
 					from: nodeMap.get(edge.source)!,
 					to: nodeMap.get(edge.target)!,
-					label: edge.item.friendlyName,
+					label: '< ' + edge.item.friendlyName,
 				}));
 			edges.forEach(edge => {
 				edge.from.outgoingEdges.push(edge);
@@ -178,14 +178,17 @@ function App() {
 			});
 		}
 		// node is unambiguously defined by its name and its parents (outputs)
-		function calculateHashRecursively(node: VNode<Node>, nodeMap: Map<Node, VNode<Node>>): void {
+		function calculateHashRecursively(node: VNode<Node>, nodeMap: Map<Node, VNode<Node>>, iter = 0): void {
+			if(iter > 100) {
+				return;
+			}
 			if (node.id === '') {
 				if (node.data.isLeaf) {
-					node.id = node.data.friendlyName;
+					node.id = '' + hash(node.data.friendlyName);
 				} else {
 					const childNodes = node.data.children.map(child => nodeMap.get(child)!);
-					childNodes.forEach(node => calculateHashRecursively(node!, nodeMap));
-					node.id = node.data.friendlyName + childNodes.map(node => node?.id).join(' ');
+					childNodes.forEach(node => calculateHashRecursively(node!, nodeMap, iter+1));
+					node.id = '' + hash(node.data.friendlyName + childNodes.map(node => node?.id).join(' '));
 				}
 			}
 		}

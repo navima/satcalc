@@ -31,14 +31,15 @@ export default class CalculatorService {
 		const expandTime = timeMethod(() => this.expand(graph, inputs, outputs, maxIterations));
 		const pruneTime = timeMethod(() => this.pruneUnfinishedChains(graph));
 		const weightTime = timeMethod(() => this.calculateCost(graph));
-		const simplifyTime = 0;//timeMethod(() => this.simplify(graph));
+		const simplifyTime = timeMethod(() => this.simplify(graph));
+		//const weight2Time = timeMethod(() => this.calculateCost(graph));
 
 		console.log(`Created graph with ${graph.nodes.length} nodes
 took 
     expand: ${expandTime}
-	weight: ${weightTime}
 	prune: ${pruneTime}
 	simplify: ${simplifyTime}
+	weight: ${weightTime}
 	----
 	${expandTime + pruneTime + simplifyTime + weightTime} ms
 roots=[
@@ -117,7 +118,7 @@ intermediate=[
 		function addInputNodes(outputNode: Node, item: ItemRate) {
 			const inputNode = new InputNode(item);
 			graph.nodes.push(inputNode);
-			const edge = new Edge(inputNode, outputNode, item);
+			const edge = new Edge(inputNode, outputNode, item.clone());
 			inputNode.outgoingEdges.push(edge);
 			outputNode.incomingEdges.push(edge);
 		}
@@ -290,6 +291,66 @@ intermediate=[
 			node.parents.forEach(markForDeletionCascadingTowardsRoot);
 			toRemove.add(node);
 		}
+	}
+
+	/**
+	 * Simplifies the graph by merging Recipe instances.
+	 */
+	private simplify(graph: Graph): void {
+		console.log('Simplifying graph');
+		const toRemove = new Set<Node>();
+
+		const recipeToInstanceMap = new Map<Recipe, RecipeNode>();
+		// merge recipes
+		graph.nodes.forEach(node => {
+			if (node instanceof RecipeNode) {
+				if (recipeToInstanceMap.has(node.recipe)) {
+					const existingNode = recipeToInstanceMap.get(node.recipe)!;
+					existingNode.merge(node);
+					toRemove.add(node);
+				} else {
+					recipeToInstanceMap.set(node.recipe, node);
+				}
+			}
+		});
+
+		// merge inputs
+		const recipeInstanceToInputMap = new Map<RecipeNode, InputNode>();
+		graph.nodes.forEach(node => {
+			if (node instanceof InputNode) {
+				if (node.outgoingEdges.length !== 1) {
+					return; // shouldnt happen
+				}
+				const targetRecipeNode = node.outgoingEdges[0].target as RecipeNode;
+				if (recipeInstanceToInputMap.has(targetRecipeNode)) {
+					const existingNode = recipeInstanceToInputMap.get(targetRecipeNode)!;
+					existingNode.merge(node);
+					toRemove.add(node);
+				} else {
+					recipeInstanceToInputMap.set(targetRecipeNode, node);
+				}
+			}
+		});
+		// merge edges
+		graph.nodes.forEach(node => {
+			const byUpstreamNode = new Map<Node, Edge[]>();
+			node.incomingEdges.forEach(edge => {
+				if (byUpstreamNode.has(edge.source)) {
+					byUpstreamNode.get(edge.source)!.push(edge);
+				} else {
+					byUpstreamNode.set(edge.source, [edge]);
+				}
+			});
+			byUpstreamNode.forEach(edges => {
+				if (edges.length > 1) {
+					const mergedEdge = edges[0];
+					for (let i = 1; i < edges.length; i++) {
+						mergedEdge.merge(edges[i]);
+					}
+				}
+			});
+		});
+		graph.nodes = graph.nodes.filter(n => !toRemove.has(n));
 	}
 }
 

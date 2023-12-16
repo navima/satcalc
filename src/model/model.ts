@@ -24,6 +24,9 @@ export class ItemRate {
 		this.item = item;
 		this.rate = rate;
 	}
+	public clone(): ItemRate {
+		return new ItemRate(this.item, this.rate);
+	}
 	public static simplify(rates: ItemRate[]): ItemRate[] {
 		const rateMap = new Map<string, number>();
 		for (const rate of rates) {
@@ -162,6 +165,7 @@ export abstract class Node {
 		return Math.min(...this.outgoingEdges.map(edge => edge.target.getDistanceToLeaf())) + 1;
 	}
 	public abstract get friendlyName(): string;
+	public abstract merge(other: Node): void;
 }
 
 export class Edge {
@@ -175,6 +179,14 @@ export class Edge {
 	}
 	public get cost(): number | undefined {
 		return this.source.cost;
+	}
+	public merge(other: Edge): void {
+		if (this.source !== other.source || this.target !== other.target) {
+			throw new Error('Cannot merge edges with different source or target');
+		}
+		this.item.rate += other.item.rate;
+		this.source.outgoingEdges.splice(this.source.outgoingEdges.indexOf(other), 1);
+		this.target.incomingEdges.splice(this.target.incomingEdges.indexOf(other), 1);
 	}
 }
 
@@ -201,6 +213,27 @@ export class RecipeNode extends Node {
 	public isSatisfied(): boolean {
 		return this.isSatisfiedBy(ItemRate.simplify(this.incomingEdges.map(edge => edge.item)));
 	}
+	public merge(other: Node): void {
+		if (!(other instanceof RecipeNode)) {
+			throw new Error('Cannot merge RecipeNode with non-RecipeNode');
+		}
+		if (this.recipe !== other.recipe) {
+			throw new Error('Cannot merge RecipeNode with different recipes');
+		}
+
+		this.multiplier += other.multiplier;
+		this.cost = (other.cost ?? 0) + (this.cost ?? 0);
+		for (const edge of other.incomingEdges) {
+			edge.target = this;
+			this.incomingEdges.push(edge);
+		}
+		other.incomingEdges = [];
+		for (const edge of other.outgoingEdges) {
+			edge.source = this;
+			this.outgoingEdges.push(edge);
+		}
+		other.outgoingEdges = [];
+	}
 }
 
 export class OutputNode extends Node {
@@ -212,6 +245,18 @@ export class OutputNode extends Node {
 	public get friendlyName(): string {
 		return 'Output: ' + this.item.friendlyName + (this.cost? ' WP: ' + this.cost?.toFixed(4) : '');
 	}
+	public merge(other: Node): void {
+		if (!(other instanceof OutputNode)) {
+			throw new Error('Cannot merge OutputNode with non-OutputNode');
+		}
+		this.item.rate += other.item.rate;
+		this.cost = (other.cost ?? 0) + (this.cost ?? 0);
+		for (const edge of other.incomingEdges) {
+			edge.target = this;
+			this.incomingEdges.push(edge);
+		}
+		other.incomingEdges = [];
+	}
 }
 
 export class InputNode extends Node {
@@ -222,6 +267,21 @@ export class InputNode extends Node {
 	}
 	public get friendlyName(): string {
 		return 'Input: ' + this.item.friendlyName + (this.cost? ' WP: ' + this.cost?.toFixed(4) : '');
+	}
+	public merge(other: Node): void {
+		if (!(other instanceof InputNode)) {
+			throw new Error('Cannot merge InputNode with non-InputNode');
+		}
+		if (this.item.item.name !== other.item.item.name) {
+			throw new Error('Cannot merge InputNodes with different items');
+		}
+		this.item.rate += other.item.rate;
+		this.cost = (other.cost ?? 0) + (this.cost ?? 0);
+		for (const edge of other.outgoingEdges) {
+			edge.source = this;
+			this.outgoingEdges.push(edge);
+		}
+		other.outgoingEdges = [];
 	}
 }
 
