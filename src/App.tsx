@@ -145,7 +145,7 @@ function App() {
 			const nodeMap = new Map<Node, VNode<Node>>();
 			const nodes: VNode<Node>[] = resultGraph.nodes.map(node => {
 				const vNode = {
-					id: '' + hash(node.friendlyName + node.children.concat(node.parents).map(c => c.friendlyName).join('')),
+					id: '',
 					label: node.friendlyName,
 					x: 0,
 					y: 0,
@@ -158,6 +158,7 @@ function App() {
 				nodeMap.set(node, vNode);
 				return vNode;
 			});
+			nodes.forEach(node => calculateHashRecursively(node, nodeMap));
 
 			const edges: VEdge<Node>[] = Array.from(new Set<Edge>(resultGraph.nodes
 				.flatMap(n => n.outgoingEdges)
@@ -175,6 +176,18 @@ function App() {
 				nodes,
 				edges: edges,
 			});
+		}
+		// node is unambiguously defined by its name and its parents (outputs)
+		function calculateHashRecursively(node: VNode<Node>, nodeMap: Map<Node, VNode<Node>>): void {
+			if (node.id === '') {
+				if (node.data.isLeaf) {
+					node.id = node.data.friendlyName;
+				} else {
+					const childNodes = node.data.children.map(child => nodeMap.get(child)!);
+					childNodes.forEach(node => calculateHashRecursively(node!, nodeMap));
+					node.id = node.data.friendlyName + childNodes.map(node => node?.id).join(' ');
+				}
+			}
 		}
 	}, [resultGraph]);
 

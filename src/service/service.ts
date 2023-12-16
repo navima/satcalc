@@ -55,6 +55,9 @@ intermediate=[
 		return graph;
 	}
 
+	/**
+	 * Constructs dependency (super)graph by expanding the outputs with Recipes.
+	 */
 	private expand(graph: Graph, inputs: ItemRate[], outputs: ItemRate[], maxIterations = 1000): void {
 		let iterations = 0;
 		// breadth first (queue)
@@ -236,20 +239,35 @@ intermediate=[
 
 	private pruneUnfinishedChains(graph: Graph): void {
 		console.log('Pruning graph');
+		let prune2Calls = 0;
 		const leaves = graph.nodes.filter(n => n.isLeaf);
 		const toRemove = new Set<Node>();
 		leaves.forEach(node => {
 			prune2(node);
 		});
 		graph.nodes = graph.nodes.filter(n => !toRemove.has(n));
-		console.log('Pruned ' + toRemove.size + ' nodes');
+		console.log(`Pruned ${toRemove.size} nodes in ${prune2Calls} iterations`);
 
 
+		/**
+		 * Prunes nodes by traversing the tree from leaves to roots, prefix.
+		 * @param node 
+		 */
 		function prune2(node: Node) {
+			prune2Calls++;
 			const parents = [...node.parents]; // create copy
-			parents.forEach(parent => {
+			for (const parent of parents) {
 				prune2(parent);
-			});
+				// check satisfaction after each pruning to skip unnecessary work
+				if (node instanceof RecipeNode && !node.isSatisfied()) {
+					console.log('Shortcut Pruning ' + node.friendlyName + ' because it is unsatisfied');
+					node.children.forEach(child => {
+						child.removeParent(node);
+					});
+					markForDeletionCascadingTowardsRoot(node);
+					break;
+				}
+			}
 			if (node.isRoot) {
 				if (node instanceof RecipeNode) {
 					node.children.forEach(child => {
@@ -258,8 +276,8 @@ intermediate=[
 					toRemove.add(node);
 				}
 			} else {
+				// delete whole subtree if unsatisfied intermediate node
 				if (node instanceof RecipeNode && !node.isSatisfied()) {
-					console.warn(node);
 					node.children.forEach(child => {
 						child.removeParent(node);
 					});
@@ -269,9 +287,7 @@ intermediate=[
 		}
 
 		function markForDeletionCascadingTowardsRoot(node: Node) {
-			node.parents.forEach(parent => {
-				markForDeletionCascadingTowardsRoot(parent);
-			});
+			node.parents.forEach(markForDeletionCascadingTowardsRoot);
 			toRemove.add(node);
 		}
 	}

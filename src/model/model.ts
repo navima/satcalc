@@ -95,18 +95,39 @@ export class Graph {
 }
 
 export abstract class Node {
+	/**
+	 * Inputs to this node
+	 */
 	public incomingEdges: Edge[] = [];
+	/**
+	 * Outputs from this node
+	 */
 	public outgoingEdges: Edge[] = [];
+	/**
+	 * WP cost of node
+	 */
 	public cost = undefined as number | undefined;
+	/**
+	 * Has no incoming edges
+	 */
 	public get isRoot(): boolean {
 		return this.incomingEdges.length === 0;
 	}
+	/**
+	 * Has no outgoing edges
+	 */
 	public get isLeaf(): boolean {
 		return this.outgoingEdges.length === 0;
 	}
+	/**
+	 * Nodes this node outputs to
+	 */
 	public get children(): Node[] {
 		return this.outgoingEdges.map(edge => edge.target);
 	}
+	/**
+	 * Nodes this node receives inputs from
+	 */
 	public get parents(): Node[] {
 		return this.incomingEdges.map(edge => edge.source);
 	}
