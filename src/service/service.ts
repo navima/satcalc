@@ -74,27 +74,25 @@ intermediate=[
 				continue;
 			}
 			if (node instanceof OutputNode) {
-				const opNode = node as OutputNode;
-				const recipesProducing = this.findRecipesProducing(opNode.item);
+				const recipesProducing = this.findRecipesProducing(node.item);
 				if (recipesProducing.length !== 0) {
 					console.log('Output - ' + node.item.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
-					addRecipeNodes(recipesProducing, opNode, opNode.item);
+					addRecipeNodes(recipesProducing, node, node.item);
 				}
-				if (!this.bannedInputs.has(opNode.item.item) && this.inputItems.has(opNode.item.item)) {
+				if (!this.bannedInputs.has(node.item.item) && this.inputItems.has(node.item.item)) {
 					console.log('Output - ' + node.item.item.name + ' -> ' + 'Input node ' + node.item.item.name);
-					addInputNodes(opNode, opNode.item);
+					addInputNodes(node, node.item);
 				}
 			} else if (node instanceof RecipeNode) {
-				const recipeNode = node as RecipeNode;
-				for (const input of recipeNode.getScaledInputs()) {
+				for (const input of node.getScaledInputs()) {
 					const recipesProducing = this.findRecipesProducing(input);
 					if (recipesProducing.length !== 0) {
 						console.log(node.recipe.name + ' - ' + input.item.name + ' -> ' + recipesProducing.map(r => r.recipe.name).join(', '));
-						addRecipeNodes(recipesProducing, recipeNode, input);
+						addRecipeNodes(recipesProducing, node, input);
 					}
 					if (!this.bannedInputs.has(input.item) && this.inputItems.has(input.item)) {
 						console.log(node.recipe.name + ' - ' + input.item.name + ' -> ' + 'Input node ' + input.item.name);
-						addInputNodes(recipeNode, input);
+						addInputNodes(node, input);
 					}
 				}
 			}
